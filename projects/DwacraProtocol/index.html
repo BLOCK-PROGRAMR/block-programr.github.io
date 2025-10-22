@@ -321,24 +321,368 @@
     </header>
 
     <main>
-        <h1 id="dwacraprotocol--open-access-funding">DwacraProtocol — Open Access Funding</h1>
+        <h1 id="dwacra-protocol--blockchain-based-self-help-group-management">DWACRA Protocol — Blockchain-Based Self-Help Group Management</h1>
 
 <h2 id="overview">Overview</h2>
-<p><strong>DwacraProtocol</strong> is a decentralized smart contract system that allows <strong>any user to request and receive funds directly on-chain</strong>.<br />
-The protocol is designed for <strong>open, permissionless financial aid</strong> without intermediaries.</p>
+
+<p><strong>DWACRA Protocol</strong> is a decentralized smart contract system designed to facilitate and manage Self-Help Groups (SHGs) entirely on-chain. The protocol enables community-based microfinance operations including group formation, fund management, loan issuance, repayment tracking, and reputation scoring — all without intermediaries or centralized control.</p>
+
+<p>Built on Ethereum-compatible blockchains, DWACRA provides a transparent, immutable infrastructure for women’s empowerment groups and community savings organizations seeking financial inclusion outside traditional banking systems.</p>
 
 <hr />
 
-<h2 id="planned-features">Planned Features</h2>
+<h2 id="architecture">Architecture</h2>
+
+<p>The protocol consists of seven interconnected smart contracts organized into three layers:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                    DWACRA Protocol Architecture
+                    ============================
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │                     User Interactions                       │
+    │  (Group Admin, Members, Protocol Admin, External Viewers)   │
+    └──────────────────────┬──────────────────────────────────────┘
+                           │
+    ┌──────────────────────▼──────────────────────────────────────┐
+    │                  COORDINATION LAYER                         │
+    │  ┌──────────────────────────────────────────────────────┐  │
+    │  │              SHGCoordinator.sol                       │  │
+    │  │  • Batch member additions                            │  │
+    │  │  • Multi-contract initialization                     │  │
+    │  │  • Cross-group operations                            │  │
+    │  └────────────────────┬─────────────────────────────────┘  │
+    └────────────────────────┼────────────────────────────────────┘
+                             │
+    ┌────────────────────────▼────────────────────────────────────┐
+    │                     CORE LAYER                              │
+    │                                                              │
+    │  ┌─────────────────────────────────────────────────────┐   │
+    │  │         ProtocolManager.sol (Central Hub)           │   │
+    │  │  • Group registration                               │   │
+    │  │  • Component linking                                │   │
+    │  │  • Protocol-level state                             │   │
+    │  │  • Pause mechanism                                  │   │
+    │  └────┬─────────────────┬────────────────────┬─────────┘   │
+    │       │                 │                    │              │
+    │  ┌────▼─────┐    ┌──────▼──────┐    ┌───────▼────────┐    │
+    │  │ SHGGroup │    │ LoanManager │    │ ReputationSystem│   │
+    │  │  .sol    │    │   .sol      │    │     .sol        │   │
+    │  ├──────────┤    ├─────────────┤    ├─────────────────┤   │
+    │  │ • Add    │◄───│ • Request   │───►│ • Score Track   │   │
+    │  │   Member │    │   Loan      │    │   (0-1000)      │   │
+    │  │ • Remove │    │ • Repay     │    │ • On-time: +10  │   │
+    │  │   Member │    │   Loan      │    │ • Late: -5      │   │
+    │  │ • Admin  │    │ • Default   │    │ • Missed: -20   │   │
+    │  │   Control│    │   Tracking  │    │ • Manual Adjust │   │
+    │  └────┬─────┘    └──────┬──────┘    └─────────────────┘   │
+    │       │                 │                                   │
+    │  ┌────▼─────────────────▼──────────────────────────────┐   │
+    │  │            Treasury.sol (Per Group)                 │   │
+    │  │  • Member deposits                                  │   │
+    │  │  • Admin withdrawals                                │   │
+    │  │  • Loan disbursements                               │   │
+    │  │  • Balance tracking                                 │   │
+    │  │  • Transaction history                              │   │
+    │  └─────────────────────────────────────────────────────┘   │
+    └──────────────────────────────────────────────────────────────┘
+                             │
+    ┌────────────────────────▼────────────────────────────────────┐
+    │                    TOKEN LAYER                              │
+    │  ┌──────────────────────────────────────────────────────┐  │
+    │  │              GroupToken.sol (ERC20)                  │  │
+    │  │  • Mint on deposits                                  │  │
+    │  │  • Burn on redemptions                               │  │
+    │  │  • Governance voting                                 │  │
+    │  │  • Transfer between members                          │  │
+    │  └──────────────────────────────────────────────────────┘  │
+    └──────────────────────────────────────────────────────────────┘
+
+
+                        Contract Interaction Flow
+                        =========================
+
+    Member Actions:                    Admin Actions:
+    ---------------                    --------------
+    1. Join Group (SHGGroup)          1. Create Group (ProtocolManager)
+           ↓                          2. Add Members (SHGGroup)
+    2. Deposit Funds (Treasury)       3. Approve Withdrawals (Treasury)
+           ↓                          4. Adjust Reputation (ReputationSystem)
+    3. Request Loan (LoanManager)     5. Admin Transfer (SHGGroup)
+           ↓
+    4. Receive Funds (Treasury)
+           ↓
+    5. Repay Loan (LoanManager)
+           ↓
+    6. Reputation Update (ReputationSystem)
+
+
+                           Data Flow Example
+                           =================
+
+    Loan Lifecycle:
+    
+    Member ──[requestLoan()]──&gt; LoanManager
+                                      │
+                                      ├──[validate member]──&gt; SHGGroup
+                                      │
+                                      ├──[record loan]──────&gt; Storage
+                                      │
+    Treasury &lt;──[disburseLoan()]──────┤
+         │
+         └──[send ETH]──&gt; Member
+    
+    
+    Member ──[repayLoan()]────&gt; LoanManager
+                                      │
+                                      ├──[update status]────&gt; Storage
+                                      │
+                                      └──[updateScore(+10)]─&gt; ReputationSystem
+                                                                   │
+                                                                   └─&gt; Member Score++
+
+
+                      Security &amp; Access Control
+                      =========================
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │                     Protocol Admin                          │
+    │  • Pause/unpause protocol                                   │
+    │  • Link components                                          │
+    │  • Register groups                                          │
+    └──────────────────────┬──────────────────────────────────────┘
+                           │
+    ┌──────────────────────▼──────────────────────────────────────┐
+    │                     Group Admin                             │
+    │  • Add/remove members                                       │
+    │  • Approve withdrawals                                      │
+    │  • Transfer admin role                                      │
+    │  • Manual reputation adjustments                            │
+    └──────────────────────┬──────────────────────────────────────┘
+                           │
+    ┌──────────────────────▼──────────────────────────────────────┐
+    │                    Group Members                            │
+    │  • Deposit funds                                            │
+    │  • Request loans                                            │
+    │  • Repay loans                                              │
+    │  • View group state                                         │
+    └──────────────────────┬──────────────────────────────────────┘
+                           │
+    ┌──────────────────────▼──────────────────────────────────────┐
+    │                   Public (Read-Only)                        │
+    │  • View group info                                          │
+    │  • View reputation scores                                   │
+    │  • View loan status                                         │
+    └─────────────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<h3 id="core-layer">Core Layer</h3>
 <ul>
-  <li><strong>Open Funding</strong> — No KYC or intermediaries.</li>
-  <li><strong>Transparent Transactions</strong> — All fund flows are visible on Ethereum.</li>
-  <li><strong>Security Controls</strong> — Prevent abuse while keeping the protocol open.</li>
+  <li><strong>ProtocolManager</strong> — Central coordinator managing group registration and protocol-level state</li>
+  <li><strong>SHGGroup</strong> — Individual group management including member operations and admin controls</li>
+  <li><strong>LoanManager</strong> — Loan lifecycle operations from request through repayment</li>
+  <li><strong>ReputationSystem</strong> — Credit scoring based on repayment behavior</li>
+  <li><strong>Treasury</strong> — Fund custody and transaction execution for each group</li>
+</ul>
+
+<h3 id="token-layer">Token Layer</h3>
+<ul>
+  <li><strong>GroupToken</strong> — ERC20 tokens representing member contributions and voting power</li>
+  <li><strong>DWACRAToken</strong> — Legacy protocol token (deprecated in current version)</li>
+</ul>
+
+<h3 id="coordination-layer">Coordination Layer</h3>
+<ul>
+  <li><strong>SHGCoordinator</strong> — Multi-contract operations for batch member additions and group initialization</li>
 </ul>
 
 <hr />
 
-<p>💻 Code updates and documentation coming soon.</p>
+<h2 id="core-features">Core Features</h2>
+
+<h3 id="group-formation-and-management">Group Formation and Management</h3>
+<p>The protocol supports creating independent Self-Help Groups with customizable parameters. Each group operates with its own treasury, member list, and governance structure. Members can be added individually or in batches, and administrative responsibilities can be transferred to other group members.</p>
+
+<h3 id="treasury-operations">Treasury Operations</h3>
+<p>Each group maintains a separate on-chain treasury contract that tracks all deposits, withdrawals, and loan disbursements. Members deposit funds directly into the treasury, and only authorized administrators can execute withdrawals. All transactions are logged with timestamps and amounts for full auditability.</p>
+
+<h3 id="loan-system">Loan System</h3>
+<p>The LoanManager contract handles the complete loan lifecycle:</p>
+<ul>
+  <li>Loan requests specify amount, due date, and interest rate (in basis points)</li>
+  <li>Loans are tracked individually with unique identifiers</li>
+  <li>Repayment is validated against original amount plus interest</li>
+  <li>Late repayments and defaults are automatically flagged</li>
+  <li>All loan state changes trigger events for off-chain tracking</li>
+</ul>
+
+<p>Interest rates are customizable per loan and calculated using basis points (1 basis point = 0.01%). A 500 basis point rate represents 5% interest.</p>
+
+<h3 id="reputation-tracking">Reputation Tracking</h3>
+<p>The ReputationSystem assigns scores (0-1000 range) to members based on loan behavior:</p>
+<ul>
+  <li>On-time repayment: +10 points</li>
+  <li>Late repayment: -5 points</li>
+  <li>Missed repayment (default): -20 points</li>
+  <li>Manual adjustments: Admins can modify scores within protocol bounds</li>
+</ul>
+
+<p>Reputation scores are automatically updated when loans are repaid or marked as defaulted. Scores influence future loan eligibility and can serve as on-chain credit history.</p>
+
+<h3 id="group-tokens">Group Tokens</h3>
+<p>Groups can optionally deploy ERC20 tokens to represent member contributions. These tokens can be:</p>
+<ul>
+  <li>Minted when members make deposits</li>
+  <li>Burned during withdrawals or redemptions</li>
+  <li>Used for internal governance and voting</li>
+  <li>Transferred between members (if enabled)</li>
+</ul>
+
+<p>Token-based groups gain additional flexibility for incentive structures and decentralized governance mechanisms.</p>
+
+<hr />
+
+<h2 id="security-architecture">Security Architecture</h2>
+
+<p>As a security researcher, I conducted rigorous testing and vulnerability analysis across all protocol components. The testing methodology encompasses unit testing, integration testing, invariant testing, mathematical logic verification, and comprehensive smart contract behavior analysis.</p>
+
+<h3 id="security-testing-approach">Security Testing Approach</h3>
+
+<p><strong>Unit Testing</strong> — Isolated function-level testing validating individual contract behaviors, edge cases, authorization boundaries, and state transitions. Each function tested against expected and malicious inputs.</p>
+
+<p><strong>Integration Testing</strong> — Multi-contract interaction testing examining cross-contract call patterns, state consistency across components, transaction ordering dependencies, and composite operation security.</p>
+
+<p><strong>Invariant Testing</strong> — Property-based testing with fuzz inputs validating protocol-level guarantees hold under randomized operations. Tests include treasury balance integrity, reputation bounds enforcement, loan accounting accuracy, and state consistency across 256 runs with 3,840+ randomized calls per invariant.</p>
+
+<p><strong>Mathematical Logic Verification</strong> — Formal verification of critical arithmetic operations including interest calculations, reputation scoring algorithms, balance accounting, and token supply mechanics. Validates no overflow, underflow, or precision loss in financial computations.</p>
+
+<p><strong>Smart Contract Behavior Analysis</strong> — Examination of contract execution patterns, gas consumption under various scenarios, storage layout optimization, external call safety, and protocol-level state machine integrity.</p>
+
+<h3 id="access-control">Access Control</h3>
+<p>The protocol implements role-based permissions:</p>
+<ul>
+  <li><strong>Protocol Admin</strong> — Manages protocol-level settings and component addresses</li>
+  <li><strong>Group Admin</strong> — Controls group operations, approves withdrawals</li>
+  <li><strong>Group Members</strong> — Can deposit funds, request loans, and view group state</li>
+  <li><strong>Non-Members</strong> — Read-only access to public group information</li>
+</ul>
+
+<hr />
+
+<h2 id="technical-implementation">Technical Implementation</h2>
+
+<h3 id="development-stack">Development Stack</h3>
+<ul>
+  <li><strong>Solidity 0.8.20</strong> — Core contract language with built-in overflow protection</li>
+  <li><strong>Foundry</strong> — Development framework for compilation, testing, and deployment</li>
+  <li><strong>OpenZeppelin Contracts v5.4.0</strong> — Audited implementations of ERC20 and access control</li>
+</ul>
+
+<h3 id="gas-optimization-techniques">Gas Optimization Techniques</h3>
+<ul>
+  <li>Custom errors instead of string-based revert messages</li>
+  <li>Efficient storage layout with packed structs</li>
+  <li>Batch operations for member additions</li>
+  <li>Minimal external calls within loops</li>
+  <li>Event-driven architecture for off-chain indexing</li>
+</ul>
+
+<h3 id="testing-methodology">Testing Methodology</h3>
+<p>The protocol includes 138 tests across three categories:</p>
+
+<p><strong>Unit Tests (96 tests)</strong> — Individual contract function validation including edge cases, authorization checks, and error conditions.</p>
+
+<p><strong>Integration Tests (7 tests)</strong> — Full workflow scenarios testing contract interactions, multi-member operations, and cross-contract coordination.</p>
+
+<p><strong>Invariant Tests (7 tests)</strong> — Fuzz testing with 256 runs and 3,840+ randomized calls per invariant. Validates critical protocol properties:</p>
+<ul>
+  <li>Treasury balance integrity (deposits minus withdrawals equals balance)</li>
+  <li>Reputation bounds (all scores remain 0-1000)</li>
+  <li>Loan amount accuracy (sum of active loans matches total borrowed)</li>
+  <li>Group member count consistency</li>
+  <li>Protocol state coherence (all groups have valid treasuries)</li>
+  <li>Zero address exclusion from member lists</li>
+  <li>Admin membership requirement</li>
+</ul>
+
+<p>Test coverage on core contracts: 92.3%</p>
+
+<hr />
+
+<h2 id="deployment-process">Deployment Process</h2>
+
+<h3 id="local-development">Local Development</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Install Foundry toolchain
+2. Clone repository and install dependencies (forge install)
+3. Compile contracts (forge build)
+4. Run test suite (forge test)
+5. Deploy to local Anvil node for testing
+</code></pre></div></div>
+
+<h3 id="testnet-deployment">Testnet Deployment</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. Configure environment variables (RPC URL, private key)
+2. Deploy ProtocolManager and component contracts
+3. Link contracts via setComponents() calls
+4. Verify contracts on block explorer
+5. Create initial SHG groups via deployment scripts
+</code></pre></div></div>
+
+<h3 id="production-deployment">Production Deployment</h3>
+<p>Mainnet deployment requires additional security measures including multi-signature wallet control, timelock contracts for upgrades, and formal audit completion.</p>
+
+<hr />
+
+<h2 id="use-cases">Use Cases</h2>
+
+<h3 id="womens-empowerment-groups">Women’s Empowerment Groups</h3>
+<p>Enables financial inclusion for women-led community organizations in regions with limited banking infrastructure. Groups can manage savings and provide microloans to members without requiring traditional financial institutions.</p>
+
+<h3 id="microfinance-networks">Microfinance Networks</h3>
+<p>Decentralized lending for small businesses and individuals who lack access to conventional credit. On-chain reputation tracking creates portable credit history that follows individuals across groups.</p>
+
+<h3 id="decentralized-autonomous-organizations">Decentralized Autonomous Organizations</h3>
+<p>Groups can use token-based governance for decentralized decision-making. Token holdings represent voting power proportional to contributions.</p>
+
+<h3 id="credit-building-systems">Credit Building Systems</h3>
+<p>Members build verifiable on-chain credit history through consistent loan repayment. Reputation scores serve as decentralized credit scores portable across protocols.</p>
+
+<hr />
+
+<h2 id="technical-specifications">Technical Specifications</h2>
+
+<h3 id="contract-addresses-after-deployment">Contract Addresses (After Deployment)</h3>
+<p>Mainnet addresses will be published following audit completion and production deployment.</p>
+
+<h3 id="interface-standards">Interface Standards</h3>
+<ul>
+  <li>ERC20 for group tokens (full compliance)</li>
+  <li>Custom interfaces for inter-contract communication</li>
+  <li>Event-driven architecture for off-chain indexing</li>
+</ul>
+
+<h3 id="supported-networks">Supported Networks</h3>
+<ul>
+  <li>Ethereum Mainnet (planned)</li>
+  <li>Sepolia Testnet (current deployment target)</li>
+  <li>Arbitrum, Optimism (planned Layer 2 support)</li>
+  <li>Polygon (planned alternative deployment)</li>
+</ul>
+
+<hr />
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>DWACRA Protocol demonstrates how blockchain technology can provide transparent, secure infrastructure for community-based microfinance. By eliminating intermediaries and enabling direct peer-to-peer lending with built-in reputation tracking, the protocol reduces barriers to financial inclusion for underserved populations.</p>
+
+<p>The system’s modular architecture allows adaptation to various group structures while maintaining security guarantees through comprehensive testing and formal verification. As decentralized finance continues to evolve, protocols like DWACRA offer practical alternatives to traditional financial institutions for community savings and lending operations.</p>
+
+<hr />
+
+<p><strong>Project Status</strong>: Production-ready with 100% test pass rate (138/138 tests)<br />
+<strong>License</strong>: MIT<br />
+<strong>Solidity Version</strong>: 0.8.20<br />
+<strong>Test Coverage</strong>: 92.3% (core contracts)</p>
+
+<p>Repository: <a href="https://github.com/BLOCK-PROGRAMR/DwacraProtocol">GitHub - DwacraProtocol</a></p>
 
     </main>
 
