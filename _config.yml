@@ -20,7 +20,7 @@ collections:
     permalink: /analysis/:title/
   audits:
     output: true
-    permalink: /analysis/:title/
+    permalink: /audits/:title/
 
 tag_permalink_style: pretty
 
