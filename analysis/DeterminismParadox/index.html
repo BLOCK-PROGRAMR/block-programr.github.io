@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analysis</title>
+    <title>The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         /* --- FONTS --- */
@@ -321,38 +321,108 @@
     </header>
 
     <main>
-        <h1>Analysis</h1>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-06-29T00:00:00+00:00" itemprop="datePublished">Jun 29, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="the-determinism-paradox-why-floating-point-numbers-are-a-blockchain-nightmare">The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare</h1>
+
+<p>Hello, all — I’m <strong>SCATER</strong>, a security researcher.This is simpe blog post about why floating-point numbers are a bad idea on blockchains like Ethereum and Solana.</p>
+
+<p>When i audit protocol ,suddenly why brain think about why blockchain are not use floating-point numbers for decimal math. After that i research about this topic and found interesting things, then i write this article to share with you.</p>
+
+<p>In standard software,  is just a minor annoyance. On a blockchain, that tiny “dust” is a <strong>consensus-breaking vulnerability.</strong></p>
+
+<p>If you’re building on Solana or Ethereum, you need to understand why we use fixed-point math. It’s not just a “best practice”—it’s an architectural requirement for the network to exist.</p>
+
+<h2 id="1-the-physics-of-the-problem-non-determinism">1. The Physics of the Problem: Non-Determinism</h2>
+
+<p>A blockchain is a giant state machine where thousands of nodes must agree on the exact result of a calculation, bit-for-bit. Floating-point math (governed by the <strong>IEEE-754 standard</strong>) was designed for scientific approximation, not absolute truth. It fails the “determinism test” for three specific reasons:</p>
 
 <ul>
-  
-  
-    <li>
-      <a href="/analysis/DeterminismParadox/">The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare</a> — June 29, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/RustOwnership/">Understanding Rust Ownership: What Makes Rust Unique</a> — June 15, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/ECDSA/">Understanding ECDSA Signatures in Blockchain: From Math to Wallets</a> — May 23, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/ERC2612/">Gasless Token Approvals? Let’s Talk ERC-2612 `permit()`</a> — April 30, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/Multisig/">Analysis of MultsigWallet</a> — April 15, 2025
-    </li>
-    <br />
-  
+  <li><strong>The Accumulator Problem:</strong> Floating point operations are not associative. In math, . In floats, due to rounding at each step, the order of operations changes the result.</li>
+  <li><strong>Hardware Architecture:</strong> Different CPUs (Intel vs. AMD vs. ARM) handle “rounding modes” and “NaN” (Not a Number) payloads differently at the silicon level.</li>
+  <li><strong>Compiler Optimization:</strong> A compiler might optimize a float formula to use an “FMA” (Fused Multiply-Add) instruction on one machine but not on another. This results in a difference of . In DeFi, that tiny difference is enough to cause a consensus failure.</li>
 </ul>
 
+<p>If Validator A rounds up and Validator B rounds down, the network splits in two. The chain halts. This is why floats are effectively “banned” from core logic.</p>
+
+<h2 id="2-ethereum-evm-the-hard-constraint">2. Ethereum (EVM): The Hard Constraint</h2>
+
+<p>The EVM was designed as a “Hard Barrier” against floating points. It simply does not have opcodes for decimal math; it only understands integers (256-bit words).</p>
+
+<h3 id="why-adding-floats-to-ethereum-would-fail">Why “adding” floats to Ethereum would fail:</h3>
+
+<ul>
+  <li><strong>The Complexity:</strong> If you tried to force float logic into Solidity, you would have to write a “Software Emulator” using integers. This would be astronomically expensive. A simple addition that costs 3 Gas might cost 500 Gas if emulated.</li>
+  <li><strong>Security Risk:</strong> If the EVM supported native floats, a malicious validator could use a specific CPU model that rounds a “Reward Calculation” up, while the rest of the network rounds down. The result? A network fork. Ethereum chooses safety over convenience by banning them entirely.</li>
+</ul>
+
+<p><strong>In the EVM, if you want a decimal, you must create it yourself by scaling an integer (e.g., 1 ETH =  wei).</strong></p>
+
+<h2 id="3-solana-svm-the-soft-trap">3. Solana (SVM): The “Soft Trap”</h2>
+
+<p>Solana is actually more dangerous for beginners because, unlike Solidity, <strong>Rust allows floats.</strong> This creates a false sense of security.</p>
+
+<h3 id="why-it-fails-anyway">Why it fails anyway:</h3>
+
+<ul>
+  <li><strong>The BPF Constraint:</strong> Solana programs run on the BPF (Berkeley Packet Filter) virtual machine. While Rust lets you write <code class="language-plaintext highlighter-rouge">f64</code>, the Solana runtime handles it through Software Library Calls rather than the hardware’s FPU (Floating Point Unit).</li>
+  <li><strong>The Compute Budget Attack:</strong> Because Solana doesn’t have float hardware support, doing float math is incredibly “heavy” on the CPU. A security researcher can look for a contract using floats and “spam” it with calculations that exceed the <strong>Compute Unit (CU)</strong> limit, effectively freezing the contract (DoS).</li>
+  <li><strong>Rounding Divergence:</strong> If the underlying LLVM compiler optimizes a float operation differently during a runtime upgrade, the validators might disagree on the state of a vault. This is why Solana Labs explicitly warns against their use.</li>
+</ul>
+
+<h2 id="4-the-solution-fixed-point-math">4. The Solution: Fixed-Point Math</h2>
+
+<p>Instead of floating points, we use <strong>Fixed-Point Math</strong>. We treat everything as an integer and “shift” the decimal point in our heads.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Floating Point</th>
+      <th>Fixed Point (Blockchain Standard)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Logic</strong></td>
+      <td> </td>
+      <td>(with a “scale” of 1000)</td>
+    </tr>
+    <tr>
+      <td><strong>Precision</strong></td>
+      <td>Approximate</td>
+      <td><strong>Exact</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Determinism</strong></td>
+      <td>Hardware-dependent</td>
+      <td><strong>Software-guaranteed</strong></td>
+    </tr>
+    <tr>
+      <td><strong>Auditability</strong></td>
+      <td>Extremely Hard</td>
+      <td>Transparent</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="research-insight-the-delta-vulnerability">Research Insight: The “Delta” Vulnerability</h3>
+
+<p>As a security researcher, when I see a program using floats, I look for the <strong>Delta</strong>. I look for where  disappears. In a pool with $1 Billion, that “small” error can be exploited by looping a transaction 1 million times until the “dust” adds up to a significant theft.</p>
+
+<p><strong>Conclusion:</strong> On a blockchain, “close enough” is a vulnerability. Integer math is the only way to ensure that the state of the world remains unified across every node on the planet.</p>
+
+
+  </div><a class="u-url" href="/analysis/DeterminismParadox/" hidden></a>
+</article>
 
     </main>
 
