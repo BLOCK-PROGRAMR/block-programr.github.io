@@ -7,6 +7,7 @@ tags: [blockchain]
 
 ---
 
+
 # The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare
 
 Hello, all — I'm **SCATER**, a security researcher.This is simpe blog post about why floating-point numbers are a bad idea on blockchains like Ethereum and Solana.
