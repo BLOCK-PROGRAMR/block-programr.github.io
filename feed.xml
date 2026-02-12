@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://block-programr.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://block-programr.github.io/" rel="alternate" type="text/html" /><updated>2026-01-25T15:28:03+00:00</updated><id>https://block-programr.github.io/feed.xml</id><title type="html">5C4T3R - Smart Contract Security Engineer</title><subtitle>Smart Contract CTF Writeups, Exploits, and Security Research(Blockchain, Solidity, EVM, Ethereum, Audits, Vulnerabilities, and more))</subtitle><entry><title type="html">Qnsec Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html" rel="alternate" type="text/html" title="Qnsec Blockchain Challenges" /><published>2025-10-19T00:00:00+00:00</published><updated>2025-10-19T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/10/19/QnsecCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html"><![CDATA[<p>I recently participated in QnsecCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://block-programr.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://block-programr.github.io/" rel="alternate" type="text/html" /><updated>2026-02-12T18:23:31+00:00</updated><id>https://block-programr.github.io/feed.xml</id><title type="html">5C4T3R - Smart Contract Security Engineer</title><subtitle>Smart Contract CTF Writeups, Exploits, and Security Research(Blockchain, Solidity, EVM, Ethereum, Audits, Vulnerabilities, and more))</subtitle><entry><title type="html">Qnsec Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html" rel="alternate" type="text/html" title="Qnsec Blockchain Challenges" /><published>2025-10-19T00:00:00+00:00</published><updated>2025-10-19T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/10/19/QnsecCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html"><![CDATA[<p>I recently participated in QnsecCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
 
 <h3 id="challenge-1">Challenge 1:</h3>
 
@@ -872,9 +872,9 @@ return my_result;
 
 <p><strong>Challenge 2 is coming soon</strong></p>]]></content><author><name></name></author><category term="writeups" /><category term="ctfs" /><category term="blockchain" /><summary type="html"><![CDATA[I recently participated in WWCTF with my team, HackerTroupe. As usual, I solved the smart contract challenges.]]></summary></entry><entry><title type="html">Damn-Defi Challenges</title><link href="https://block-programr.github.io/writeups/2025/04/30/DamnDefi.html" rel="alternate" type="text/html" title="Damn-Defi Challenges" /><published>2025-04-30T00:00:00+00:00</published><updated>2025-04-30T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/04/30/DamnDefi</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/04/30/DamnDefi.html"><![CDATA[<p><strong>GITHUB</strong>: <a href="https://  .com/SCATERLABs/CTFs/tree/0465130a63d25a8078a39b3241c9a8c7e101b7f1/Dam-vulnerable-Defi">View</a></p>
 
-<h1 id="backdoor-challenge">Backdoor Challenge</h1>
+<h3 id="backdoor-challenge">Backdoor Challenge</h3>
 
-<h2 id="challenge-overview">Challenge Overview:</h2>
+<h4 id="challenge-overview">Challenge Overview:</h4>
 
 <p>In this challenge, we are given a contract called WalletRegistry, which rewards users for creating a Safe wallet (a type of smart wallet). For each wallet registered, the registry sends 10 DVT tokens to the new wallet.</p>
 
@@ -893,7 +893,7 @@ Your goal:</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    Exploit the system and transfer all 40 DVT tokens to a recovery address — in a single transaction.
 </code></pre></div></div>
 
-<h2 id="vulnerability-explaination">Vulnerability Explaination:</h2>
+<h4 id="vulnerability-explaination">Vulnerability Explaination:</h4>
 
 <p>The core idea is to trick the wallet creation logic into executing malicious code during the setup of a new Safe wallet.</p>
 
@@ -913,7 +913,7 @@ Your goal:</p>
 
 <p>Even though the Safe looks like it’s owned by Alice/Bob/etc., we (the attacker) can inject a delegatecall that approves us to move funds on behalf of the new wallet.</p>
 
-<h2 id="vulnerablecodein-walletregistrysol">VulnerableCode(in WalletRegistry.sol):</h2>
+<h4 id="vulnerablecodein-walletregistrysol">VulnerableCode(in WalletRegistry.sol):</h4>
 <pre><code class="language-solidity">if (bytes4(initializer[:4]) != Safe.setup.selector) {
     revert InvalidInitialization();
 }
@@ -973,7 +973,7 @@ Also:</p>
 
 <p>All in a single transaction</p>
 
-<h2 id="exploit-code">Exploit Code:</h2>
+<h4 id="exploit-code">Exploit Code:</h4>
 
 <pre><code class="language-solidity">// challenge contract
 
@@ -1060,7 +1060,7 @@ contract BackDoorAttacker {
 
 </code></pre>
 
-<h2 id="proof-of-exploit">Proof of Exploit:</h2>
+<h4 id="proof-of-exploit">Proof of Exploit:</h4>
 
 <div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">Suite</span> <span class="nt">result</span><span class="o">:</span> <span class="nt">ok</span><span class="o">.</span> <span class="err">1</span> <span class="nt">passed</span><span class="o">;</span> <span class="err">0</span> <span class="nt">failed</span><span class="o">;</span> <span class="err">0</span> <span class="nt">skipped</span><span class="o">;</span> <span class="nt">finished</span> <span class="nt">in</span> <span class="err">6</span><span class="o">.</span><span class="err">03</span><span class="nt">ms</span> <span class="o">(</span><span class="err">3</span><span class="o">.</span><span class="err">22</span><span class="nt">ms</span> <span class="nt">CPU</span> <span class="nt">time</span><span class="o">)</span>
 
