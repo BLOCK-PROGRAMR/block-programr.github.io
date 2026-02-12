@@ -7,7 +7,6 @@ tags: [ecrecover]
 
 ---
 
-# Understanding ECDSA Signatures in Blockchain: From Math to Wallets
 
 The backbone of blockchain is cryptography because it ensures data security, integrity, and trust without needing a central authority.
 
@@ -38,9 +37,9 @@ Ethereum uses:
 
 > Multiplying a point (e.g. G) repeatedly is called scalar multiplication and is used for key generation
 
-#### Visula Representation:
+<!-- #### Visula Representation:
 
-    ![ECDSA](../images/cycle.png)
+    ![ECDSA](../images/cycle.png) -->
 
 
 

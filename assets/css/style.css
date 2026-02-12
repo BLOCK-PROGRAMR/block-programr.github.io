@@ -1,105 +1,336 @@
+/* ===========================
+   NEWSPAPER-STYLE LIGHT THEME
+   Inspired by rekt.news article pages
+   =========================== */
+
+/* --- HOME PAGE LAYOUT --- */
 .home {
-    max-width: 800px;
+    max-width: 720px;
     margin: 0 auto;
-    /* This centers the div horizontally */
-    padding: 2rem;
+    padding: 2rem 1.5rem;
     text-align: left;
-    /* This centers text like headings and paragraphs */
 }
 
+/* --- POST LIST (Simple, Clean) --- */
 .home .post-list {
     list-style: none;
     padding: 0;
 }
 
 .home .post-list li {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 1rem;
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid #d4cfc4;
 }
 
-
-/* Project Card Styling */
-.project-box {
-    display: block;
-    background-color: #1e1e1e;
-    padding: 1.5rem;
-    border-radius: 12px;
-    color: #ffffff;
-    text-decoration: none;
-    border: 1px solid #333;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.home .post-list li:last-child {
+    border-bottom: none;
 }
 
-.project-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-}
-
-.project-box h2 {
+.home .post-list h2 {
+    font-family: 'Roboto Mono', monospace;
     font-size: 1.5rem;
-    margin-bottom: 0.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
-.project-box p {
+.home .post-list .post-meta {
+    font-size: 0.9rem;
+    color: #666666;
+    margin-bottom: 1rem;
+    font-family: Georgia, serif;
+    font-style: italic;
+}
+
+.home .post-list p {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: #2a2a2a;
+    margin-bottom: 1.5rem;
+}
+
+.home .post-list a {
+    color: #1a1a1a;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+.home .post-list a:hover h2 {
+    color: #c41e3a;
+}
+
+.home .post-list .read-more {
+    color: #c41e3a;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid #c41e3a;
     font-size: 1rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
+    transition: all 0.2s ease;
 }
 
-.project-box small {
-    font-size: 0.85rem;
-    color: #ccc;
-    display: block;
-    margin-top: 0.5rem;
-    border-top: 1px solid #333;
-    padding-top: 0.5rem;
+.home .post-list .read-more:hover {
+    color: #8b1728;
+    border-bottom-color: #8b1728;
 }
 
-/* Project Card Styling - Compact & Modern */
+/* --- PROJECT CARDS (Minimal Style) --- */
 .project-box {
     display: block;
-    background-color: #1e1e1e;
-    padding: 1rem 1.25rem;
-    /* reduced padding for a compact look */
-    border-radius: 10px;
-    color: #ffffff;
+    background: #ffffff;
+    padding: 2.5rem;
+    border: 1px solid #d4cfc4;
+    color: #2a2a2a;
     text-decoration: none;
-    border: 1px solid #2a2a2a;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
 }
 
 .project-box:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #c41e3a;
 }
 
 .project-box h2 {
-    font-size: 1.2rem;
-    /* reduced for balance */
-    margin-bottom: 0.3rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    margin-top: 0;
+    color: #1a1a1a;
+    letter-spacing: -0.01em;
 }
 
 .project-box p {
-    font-size: 0.9rem;
-    /* slightly smaller text */
-    margin-bottom: 0.5rem;
-    line-height: 1.35;
+    font-size: 1.05rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.7;
+    color: #2a2a2a;
 }
 
 .project-box small {
-    font-size: 0.8rem;
-    color: #b3b3b3;
+    font-size: 0.9rem;
+    color: #666666;
     display: block;
-    margin-top: 0.4rem;
-    border-top: 1px solid #2a2a2a;
-    padding-top: 0.4rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #d4cfc4;
+    font-style: italic;
 }
 
-/* Controls space between project boxes */
+/* --- PROJECT GRID LAYOUT --- */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.2rem;
-    /* change this value for more/less spacing */
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+/* --- ARTICLE CONTENT STYLING --- */
+article {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+article h1 {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+}
+
+article h2 {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 3.5rem;
+    margin-bottom: 1.25rem;
+    color: #1a1a1a;
+}
+
+article h3 {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333333;
+}
+
+article p {
+    margin-bottom: 1.5rem;
+    line-height: 1.75;
+    color: #2a2a2a;
+    font-size: 1.125rem;
+}
+
+article ul,
+article ol {
+    margin-bottom: 1.75rem;
+    padding-left: 2rem;
+    line-height: 1.75;
+    color: #2a2a2a;
+}
+
+article li {
+    margin-bottom: 0.75rem;
+}
+
+/* --- BLOCKQUOTES --- */
+blockquote {
+    border-left: 4px solid #c41e3a;
+    padding-left: 2rem;
+    margin: 2.5rem 0;
+    color: #333333;
+    font-style: italic;
+    font-size: 1.25rem;
+    line-height: 1.6;
+}
+
+blockquote p {
+    margin-bottom: 0.5rem;
+}
+
+/* --- TABLES --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2.5rem 0;
+    background: #ffffff;
+    border: 1px solid #d4cfc4;
+}
+
+th,
+td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #d4cfc4;
+}
+
+th {
+    background: #ebe9e3;
+    color: #1a1a1a;
+    font-weight: 700;
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+tr:hover {
+    background: #fafaf8;
+}
+
+/* --- IMAGES --- */
+img {
+    max-width: 100%;
+    height: auto;
+    margin: 2.5rem 0;
+    border: 1px solid #d4cfc4;
+}
+
+figure {
+    margin: 2.5rem 0;
+}
+
+figcaption {
+    font-size: 0.9rem;
+    color: #666666;
+    font-style: italic;
+    text-align: center;
+    margin-top: 0.75rem;
+}
+
+/* --- ANALYSIS & AUDIT PAGES --- */
+.analysis-box,
+.audit-box,
+.ctf-box {
+    background: #ffffff;
+    padding: 2.5rem;
+    border: 1px solid #d4cfc4;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.analysis-box:hover,
+.audit-box:hover,
+.ctf-box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #c41e3a;
+}
+
+/* --- TAG PAGES --- */
+.tag-item {
+    display: inline-block;
+    background: #ffffff;
+    border: 1px solid #d4cfc4;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    color: #666666;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.tag-item:hover {
+    background: #c41e3a;
+    border-color: #c41e3a;
+    color: #ffffff;
+}
+
+/* --- SECTION DIVIDERS --- */
+hr {
+    border: none;
+    border-top: 2px solid #d4cfc4;
+    margin: 3rem 0;
+}
+
+/* --- METADATA --- */
+.post-meta,
+.article-meta {
+    font-size: 0.9rem;
+    color: #666666;
+    font-style: italic;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #d4cfc4;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 768px) {
+    body {
+        font-size: 1rem;
+    }
+
+    .home {
+        padding: 1.5rem 1rem;
+    }
+
+    .home .post-list h2 {
+        font-size: 1.35rem;
+    }
+
+    article h1 {
+        font-size: 1.4rem;
+    }
+
+    article h2 {
+        font-size: 1.2rem;
+    }
+
+    article h3 {
+        font-size: 1.1rem;
+    }
+
+    .project-box,
+    .analysis-box,
+    .audit-box {
+        padding: 1.5rem;
+    }
+
+    blockquote {
+        padding-left: 1.5rem;
+        font-size: 1.1rem;
+    }
 }

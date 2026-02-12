@@ -7,7 +7,7 @@ tags: [blockchain]
 
 ---
 
-# MultisigWallet 
+
 
 
 ***purpose***:

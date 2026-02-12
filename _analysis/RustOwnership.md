@@ -9,7 +9,6 @@ tags: [rust]
 
 
 
-#  Understanding Rust Ownership: What Makes Rust Unique
 
 Rust’s ownership model is what makes it stand out from other languages. Unlike languages that use garbage collection (like Java or Go), Rust enforces memory safety **at compile time** without needing a runtime.
 
