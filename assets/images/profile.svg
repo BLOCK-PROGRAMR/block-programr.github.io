@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
-  <rect width="200" height="200" fill="#1a1a1a"/>
-  <circle cx="100" cy="80" r="40" fill="#666666"/>
-  <path d="M 100 130 Q 70 130 50 160 L 150 160 Q 130 130 100 130 Z" fill="#666666"/>
-  <text x="100" y="185" font-family="Roboto Mono, monospace" font-size="14" fill="#999999" text-anchor="middle">SCATER</text>
-</svg>

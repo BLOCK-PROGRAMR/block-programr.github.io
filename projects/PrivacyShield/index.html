@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analysis</title>
+    <title>Privacy Shield</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         /* --- FONTS --- */
@@ -453,38 +453,114 @@
     <!-- Main Content Area -->
     <div class="content-wrapper">
         <main>
-            <h1>Analysis</h1>
+            <h1 id="privacy-shield--zk-biometric-identity-protocol">Privacy Shield — ZK-Biometric Identity Protocol</h1>
 
+<h2 id="overview">Overview</h2>
+
+<p><strong>Privacy Shield</strong> is a decentralized identity system that solves a major privacy hole in current blockchain identity solutions. Instead of creating one universal ID that can track you across every app you use, Privacy Shield generates a unique, unlinkable identity for each application.</p>
+
+<p>Think of it like this: when you verify on Uniswap, you get ID_Alpha. When you verify on Aave, you get ID_Beta. Both apps know you’re a real human, but they can’t connect the dots to track your activity across platforms.</p>
+
+<hr />
+
+<h2 id="the-problem-were-solving">The Problem We’re Solving</h2>
+
+<p>Current solutions like Worldcoin or Soulbound Tokens give you one ID for everything. If you use it on multiple DeFi apps, anyone can:</p>
 <ul>
-  
-  
-    <li>
-      <a href="/analysis/DeterminismParadox/">The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare</a> — June 29, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/RustOwnership/">Understanding Rust Ownership: What Makes Rust Unique</a> — June 15, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/ECDSA/">Understanding ECDSA Signatures in Blockchain: From Math to Wallets</a> — May 23, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/ERC2612/">Gasless Token Approvals? Let’s Talk ERC-2612 `permit()`</a> — April 30, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/Multisig/">Analysis of MultsigWallet</a> — April 15, 2025
-    </li>
-    <br />
-  
+  <li>Track your activity across platforms</li>
+  <li>Build a profile of your financial behavior</li>
+  <li>Link your identity to all your on-chain actions</li>
 </ul>
 
+<p>This creates a surveillance system, not a privacy system.</p>
+
+<hr />
+
+<h2 id="how-it-works">How It Works</h2>
+
+<p>Privacy Shield uses <strong>Designated Verifier Proofs (DVP)</strong> combined with biometric data to create contextual identities:</p>
+
+<ol>
+  <li><strong>Capture</strong> — Your device camera captures facial landmarks using MediaPipe (runs locally, no server upload)</li>
+  <li><strong>Calculate</strong> — AI extracts 468 facial landmarks and computes ratios between key points to create a unique <code class="language-plaintext highlighter-rouge">SecretID</code></li>
+  <li><strong>Hash</strong> — Poseidon hash function (SNARK-friendly) converts the SecretID into a cryptographic commitment</li>
+  <li><strong>Prove</strong> — Zero-knowledge circuit generates elliptic curve proofs: “I know a SecretID for THIS app” without revealing the actual value</li>
+  <li><strong>Submit</strong> — Rust-based relayer submits the proof on-chain (gasless for users)</li>
+  <li><strong>Verify</strong> — Smart contract validates the proof and marks you as a verified human for that specific dApp</li>
+</ol>
+
+<p><strong>Key Innovation:</strong> The proof is mathematically bound to both your biometric data AND the specific app address. Same person, different app = completely different unlinkable ID.</p>
+
+<hr />
+
+<h2 id="architecture">Architecture</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────┐      ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│   Browser   │      │  ZK Engine  │      │   Relayer   │      │  Verifier   │
+│  (MediaPipe)│─────▶│   (Circom)  │─────▶│  (Backend)  │─────▶│  (Contract) │
+│             │      │             │      │             │      │             │
+│ Face → Hash │      │ Hash → Proof│      │ Proof → TX  │      │ Proof ← ✓   │
+└─────────────┘      └─────────────┘      └─────────────┘      └─────────────┘
+</code></pre></div></div>
+
+<p><strong>Four Modules:</strong></p>
+
+<ul>
+  <li><strong>Identity Engine</strong> — Converts your face into a secret number in the browser (MediaPipe + TensorFlow.js extracts 468 landmarks)</li>
+  <li><strong>ZK Engine</strong> — Creates zero-knowledge proofs using Circom circuits, Groth16, and elliptic curve cryptography</li>
+  <li><strong>Relayer (Rust)</strong> — High-performance backend that submits proofs on your behalf (gasless onboarding, wallet anonymity)</li>
+  <li><strong>Verifier Contract</strong> — On-chain Solidity smart contract that verifies proofs and tracks verified users per dApp</li>
+</ul>
+
+<hr />
+
+<h2 id="security-features">Security Features</h2>
+
+<ul>
+  <li><strong>No Raw Biometrics</strong> — We never store your face. Only hashes of geometric ratios remain</li>
+  <li><strong>Wallet Binding</strong> — Proofs are tied to your specific wallet address (no replay attacks)</li>
+  <li><strong>Plausible Deniability</strong> — The verifier could mathematically have forged the proof, protecting you under coercion</li>
+  <li><strong>SNARK-Friendly Hashing</strong> — Poseidon hash reduces proof generation time by 90% compared to SHA-256</li>
+</ul>
+
+<hr />
+
+<h2 id="tech-stack">Tech Stack</h2>
+
+<ul>
+  <li><strong>Circom 2.1</strong> — ZK circuit language for writing R1CS constraint logic</li>
+  <li><strong>Groth16</strong> — Proof system with smallest size (~200 bytes) and cheapest gas costs</li>
+  <li><strong>Poseidon Hash</strong> — SNARK-optimized hash function for efficient witness calculation</li>
+  <li><strong>Elliptic Curves</strong> — Public/private key pairs for proof verification (a, b, c points on curve)</li>
+  <li><strong>MediaPipe</strong> — Google’s on-device AI for facial landmark detection (468 points)</li>
+  <li><strong>Rust</strong> — High-performance relayer backend for submitting transactions</li>
+  <li><strong>Polygon Amoy</strong> — Fast, low-cost testnet for identity verification</li>
+  <li><strong>Solidity</strong> — Smart contract verifier written for EVM chains</li>
+</ul>
+
+<hr />
+
+<h2 id="current-status">Current Status</h2>
+
+<p>🚧 <strong>In Development</strong> — College mini-project focused on user sovereignty</p>
+
+<ul>
+  <li>✅ Infrastructure skeleton built</li>
+  <li>⏳ Biometric landmark extraction in progress</li>
+  <li>⏳ ZK circuit logic implementation</li>
+  <li>⏳ On-chain verifier integration</li>
+  <li>⏳ Polygon Amoy deployment planned</li>
+</ul>
+
+<hr />
+
+<h2 id="why-this-matters">Why This Matters</h2>
+
+<p>Identity should be a tool for <strong>you</strong>, not a tracker for corporations. Privacy Shield gives you the power to prove you’re human while keeping your identity compartmentalized and private.</p>
+
+<hr />
+
+<p>🔗 <a href="https://github.com/Ultr0nX/Identity-protocol">GitHub Repository</a></p>
 
         </main>
     </div>

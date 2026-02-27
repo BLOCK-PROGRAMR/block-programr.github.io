@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analysis</title>
+    <title>UMI (U and Me)</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         /* --- FONTS --- */
@@ -453,38 +453,161 @@
     <!-- Main Content Area -->
     <div class="content-wrapper">
         <main>
-            <h1>Analysis</h1>
+            <h1 id="umi-u-and-me--p2p-messaging-with-rust">UMI (U and Me) — P2P Messaging with Rust</h1>
 
+<h2 id="overview">Overview</h2>
+
+<p><strong>UMI</strong> is a peer-to-peer chat system where devices talk directly to each other over local WiFi — no servers, no middlemen, no surveillance. Just you and me.</p>
+
+<p>Most messaging apps (WhatsApp, Telegram, Discord) route your messages through their servers. They see everything. UMI cuts them out entirely. It’s built for those moments when you want to chat privately with someone nearby without big tech watching.</p>
+
+<hr />
+
+<h2 id="how-p2p-works">How P2P Works</h2>
+
+<p><strong>Normal messaging (Client-Server):</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>You → App Server (WhatsApp/Google) → Your Friend
+      ↑ Server sees everything
+</code></pre></div></div>
+
+<p><strong>UMI (Peer-to-Peer):</strong></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>You → Direct Connection → Your Friend
+      ↑ No middleman
+</code></pre></div></div>
+
+<p>In a P2P network:</p>
 <ul>
-  
-  
-    <li>
-      <a href="/analysis/DeterminismParadox/">The Determinism Paradox: Why Floating-Point Numbers are a Blockchain Nightmare</a> — June 29, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/RustOwnership/">Understanding Rust Ownership: What Makes Rust Unique</a> — June 15, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/ECDSA/">Understanding ECDSA Signatures in Blockchain: From Math to Wallets</a> — May 23, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/ERC2612/">Gasless Token Approvals? Let’s Talk ERC-2612 `permit()`</a> — April 30, 2025
-    </li>
-    <br />
-  
-    <li>
-      <a href="/analysis/Multisig/">Analysis of MultsigWallet</a> — April 15, 2025
-    </li>
-    <br />
-  
+  <li>Every device acts as both client and server</li>
+  <li>Peers discover each other directly (no central directory)</li>
+  <li>Messages travel point-to-point (faster, private, censorship-resistant)</li>
 </ul>
 
+<p><strong>Real-world examples:</strong> BitTorrent (file sharing), Blockchain (decentralized ledgers), early Skype (direct calling).</p>
+
+<hr />
+
+<h2 id="how-it-works">How It Works</h2>
+
+<ol>
+  <li><strong>Identity</strong> — Each peer generates a unique Peer ID when they start</li>
+  <li><strong>Discovery</strong> — Peers broadcast their existence using mDNS (multicast DNS) on local WiFi</li>
+  <li><strong>Connection</strong> — When peers discover each other, they open encrypted communication channels</li>
+  <li><strong>Messaging</strong> — Type a message, hit enter, and it broadcasts directly to all discovered peers</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────┐         ┌─────────┐         ┌─────────┐
+│ Peer A  │◄───────►│ Peer B  │◄───────►│ Peer C  │
+└─────────┘    ↕    └─────────┘    ↕    └─────────┘
+               │                     │
+           mDNS Discovery (Local WiFi)
+</code></pre></div></div>
+
+<p><strong>No server. No database. No logs.</strong></p>
+
+<hr />
+
+<h2 id="architecture">Architecture</h2>
+
+<p>UMI uses <strong>libp2p</strong>, a modular networking stack originally built for IPFS:</p>
+
+<ul>
+  <li><strong>Transport</strong> — TCP for reliable message delivery</li>
+  <li><strong>Identity</strong> — Ed25519 keypairs for peer authentication</li>
+  <li><strong>Discovery</strong> — mDNS broadcasts to find local peers</li>
+  <li><strong>Protocol</strong> — Request/Response pattern for messaging</li>
+  <li><strong>Swarm</strong> — Manages all peer connections and events</li>
+</ul>
+
+<p>When you run UMI, it:</p>
+<ol>
+  <li>Generates your Peer ID (e.g., <code class="language-plaintext highlighter-rouge">12D3KooW...</code>)</li>
+  <li>Listens on available ports (random)</li>
+  <li>Broadcasts to local network via mDNS</li>
+  <li>Auto-connects when peers are discovered</li>
+  <li>Routes messages directly peer-to-peer</li>
+</ol>
+
+<hr />
+
+<h2 id="example-output-4-peers-on-same-wifi">Example Output (4 Peers on Same WiFi)</h2>
+
+<p><strong>Peer A</strong> sends “hii”:</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Your Peer ID</span><span class="pi">:</span> <span class="s">12D3KooWGHktar8HC2q1GhPazDNSZrehimNYS9Xgy23D4ch47Aag</span>
+<span class="na">Discovered peer</span><span class="pi">:</span> <span class="s">12D3KooWQmFxzswRsKwES8xwuB7CVm2jM49jJijAsBSTunKhPFt3</span>
+<span class="na">Discovered peer</span><span class="pi">:</span> <span class="s">12D3KooWE9LufgKDyy6HLRMLyUH4ms3eAqC8MxvyghN2Nw1cXZ3o</span>
+<span class="na">Received request</span><span class="pi">:</span> <span class="s1">'</span><span class="s">hii'</span>
+</code></pre></div></div>
+
+<p><strong>Peer B, C, D</strong> all receive instantly:</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">Discovered peer</span><span class="pi">:</span> <span class="s">12D3KooWGHktar8HC2q1GhPazDNSZrehimNYS9Xgy23D4ch47Aag</span>
+<span class="na">Received request</span><span class="pi">:</span> <span class="s1">'</span><span class="s">hii'</span>
+</code></pre></div></div>
+
+<p>All communication happens locally. Your router sees encrypted packets, but has no idea what you’re saying.</p>
+
+<hr />
+
+<h2 id="tech-stack">Tech Stack</h2>
+
+<ul>
+  <li><strong>Rust</strong> — Memory-safe, concurrent, blazing fast</li>
+  <li><strong>libp2p</strong> — Modular P2P networking framework (same tech powering IPFS and Polkadot)</li>
+  <li><strong>mDNS</strong> — Local peer discovery without DNS servers</li>
+  <li><strong>Request/Response</strong> — Simple message protocol for chat</li>
+  <li><strong>TCP</strong> — Reliable transport layer for message delivery</li>
+</ul>
+
+<hr />
+
+<h2 id="features">Features</h2>
+
+<ul>
+  <li><strong>No Server</strong> — All communication is peer-to-peer</li>
+  <li><strong>Local Network</strong> — Works on WiFi/LAN without internet</li>
+  <li><strong>Encrypted Channels</strong> — libp2p handles secure transport</li>
+  <li><strong>Auto-Discovery</strong> — Peers find each other automatically</li>
+  <li><strong>Broadcast Messages</strong> — Send to all discovered peers at once</li>
+  <li><strong>No Logs</strong> — Nothing is stored; messages live only in memory</li>
+</ul>
+
+<hr />
+
+<h2 id="limitations">Limitations</h2>
+
+<ul>
+  <li><strong>Range</strong> — Only works on same local network (WiFi/LAN)</li>
+  <li><strong>No History</strong> — Messages disappear when peers disconnect</li>
+  <li><strong>No Identity</strong> — Peer IDs change every session</li>
+  <li><strong>No Global Reach</strong> — Can’t message across the internet (yet)</li>
+</ul>
+
+<p>Future versions will add NAT traversal and DHT for global P2P routing.</p>
+
+<hr />
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p><strong>Install Rust:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">--proto</span> <span class="s1">'=https'</span> <span class="nt">--tlsv1</span>.2 <span class="nt">-sSf</span> https://sh.rustup.rs | sh
+</code></pre></div></div>
+
+<p><strong>Clone &amp; Run:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/SCATERLABs/UMI.git
+<span class="nb">cd </span>UMI
+cargo run
+</code></pre></div></div>
+
+<p>Open multiple terminals, run <code class="language-plaintext highlighter-rouge">cargo run</code> in each, and watch peers discover each other. Type messages and see them broadcast instantly.</p>
+
+<hr />
+
+<h2 id="why-this-matters">Why This Matters</h2>
+
+<p>Sometimes you just want to talk to someone nearby without Google, Meta, or your ISP knowing what you’re saying. UMI is a proof of concept that <strong>private, direct communication is possible</strong> — no permissions needed.</p>
+
+<hr />
+
+<p>🔗 <a href="https://github.com/SCATERLABs/UMI">GitHub Repository</a></p>
 
         </main>
     </div>
