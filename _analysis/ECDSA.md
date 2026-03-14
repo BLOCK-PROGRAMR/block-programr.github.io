@@ -136,14 +136,14 @@ Nithinkumar wants to send 1 ETH to Uday. He uses an Ethereum wallet (e.g., MetaM
 1.Message to be signed (Transaction Data):
  ```yaml
 {
-  "to": "0xBobAddress",
+  "to": "0xudayAddress",
   "value": 1 ETH,
   "nonce": 0,
   "gasPrice": 20 Gwei,
   "gasLimit": 21000
 }
  ```
- 2.The wallet hashes the transaction and signs it using Alice’s private key with ECDSA, producing a signature:
+ 2.The wallet hashes the transaction and signs it using nithin's private key with ECDSA, producing a signature:
 
  ```yaml
  Signature = (r, s, v)
