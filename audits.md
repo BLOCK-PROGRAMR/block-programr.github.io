@@ -77,6 +77,23 @@ Here are some of my public and private audits where I’ve shared my findings, a
   <a href="#link" target="_self"> -- </a>
 </td>
 </tr>
+
+<tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Code4rena</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Inituition protocol</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rank- #2</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> 1 medium +Qa report #2nd rank </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$445.43</td>
+         <td style="padding:10px; border-bottom:1px solid #ddd;">
+          <a href="https://code4rena.com/@0xscater" target="_blank">
+            click here
+          </a>
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+  <a href="{{ '/audits/inituition-protocol-issue/' | relative_url }}" target="_self">View Report</a>
+</td>
+</tr>
+
   </tbody>
   </table>
 </div>
