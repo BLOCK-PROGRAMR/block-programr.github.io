@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Projects</title>
+    <title>कवच KavachPay — Private Payroll on Solana</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         /* --- FONTS --- */
@@ -453,104 +453,354 @@
     <!-- Main Content Area -->
     <div class="content-wrapper">
         <main>
-            <div class="home">
-  <h1>Projects</h1>
-  <div class="project-grid">
-    
-    
-    
-      <a href="/projects/KavachPay/" class="project-box">
-        <h2>कवच KavachPay — Private Payroll on Solana</h2>
-        <p>2026-03-22 00:00:00 +0000</p>
-        <p>Private payroll on Solana with TEE-backed salary confidentiality and automatic tax deduction</p>
-        
-          <small><strong>Tech:</strong> Solana, Anchor 0.32.1, MagicBlock Private ER, Intel TDX, Next.js 14, TypeScript, TailwindCSS</small>
-        
-      </a>
-    
-      <a href="/projects/PrivacyShield/" class="project-box">
-        <h2>Privacy Shield</h2>
-        <p>2026-02-15 00:00:00 +0000</p>
-        <p>Zero-knowledge biometric identity protocol that lets you prove you're human without revealing who you are</p>
-        
-          <small><strong>Tech:</strong> Circom, Rust, Solidity, MediaPipe, Groth16, Poseidon Hash, Elliptic Curves</small>
-        
-      </a>
-    
-      <a href="/projects/UMI/" class="project-box">
-        <h2>UMI (U and Me)</h2>
-        <p>2025-11-20 00:00:00 +0000</p>
-        <p>Peer-to-peer messaging over local WiFi with no central server — just you and me</p>
-        
-          <small><strong>Tech:</strong> Rust, libp2p, mDNS, Request-Response Protocol</small>
-        
-      </a>
-    
-      <a href="/projects/DwacraProtocol/" class="project-box">
-        <h2>DwacraProtocol</h2>
-        <p>2025-05-06 00:00:00 +0000</p>
-        <p>Decentralized Self-Help Group management protocol with on-chain reputation tracking and microfinance capabilities</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry</small>
-        
-      </a>
-    
-      <a href="/projects/DSCToken/" class="project-box">
-        <h2>DSC Token</h2>
-        <p>2024-06-20 00:00:00 +0000</p>
-        <p>ERC-20 token pegged to Indian Rupee (INR)</p>
-        
-          <small><strong>Tech:</strong> Solidity, Ethereum, Foundry</small>
-        
-      </a>
-    
-      <a href="/projects/FundMe/" class="project-box">
-        <h2>Fund Me</h2>
-        <p>2024-03-15 00:00:00 +0000</p>
-        <p>ETH funding smart contract with real-time ETH/USD conversion</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry, Chainlink</small>
-        
-      </a>
-    
-      <a href="/projects/EmotionNFT/" class="project-box">
-        <h2>Emotion NFT</h2>
-        <p>2023-10-07 00:00:00 +0000</p>
-        <p>Driven NFT based on Mood</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry, Ethers.js, Anvil</small>
-        
-      </a>
-    
-      <a href="/projects/DecentralizedVoting/" class="project-box">
-        <h2>Voting Application</h2>
-        <p>2023-09-25 00:00:00 +0000</p>
-        <p>Decentralized, tamper-resistant voting</p>
-        
-          <small><strong>Tech:</strong> Solidity, Hardhat, Ethers.js, React.js, MetaMask</small>
-        
-      </a>
-    
-      <a href="/projects/LotteryDapp/" class="project-box">
-        <h2>LotteryDapp</h2>
-        <p>2023-07-21 00:00:00 +0000</p>
-        <p>A decentralized, trustless Lottery Dapp</p>
-        
-          <small><strong>Tech:</strong> Solidity, Hardhat, ethers.js, React.js, Chainlink</small>
-        
-      </a>
-    
-      <a href="/projects/OptimusNFT/" class="project-box">
-        <h2>OptimusNFT</h2>
-        <p>2023-06-05 00:00:00 +0000</p>
-        <p>ERC721 Token - Optimus Testing NFT</p>
-        
-          <small><strong>Tech:</strong> Solidity, Foundry, Ethereum</small>
-        
-      </a>
-    
-  </div>
-</div>
+            <h1 id="कवच-kavachpay--private-payroll-on-solana">कवच KavachPay — Private Payroll on Solana</h1>
+
+<blockquote>
+  <p><strong>Your salary. Nobody else’s business.</strong></p>
+</blockquote>
+
+<p>KavachPay is the first private payroll protocol on Solana with automatic tax deduction. Salary amounts are encrypted inside MagicBlock’s Private Ephemeral Rollup TEE (Intel TDX hardware). Solana Explorer shows one settlement transaction. Nothing else. Ever.</p>
+
+<hr />
+
+<h2 id="the-problem">The Problem</h2>
+
+<p>Every payment on Solana is 100% public.</p>
+
+<p>When your company pays your salary in USDC — your colleague can search your wallet on Solana Explorer and see exactly how much you earn. Your competitors can see every vendor payment. Your employees can see each other’s salaries.</p>
+
+<p>This is why enterprises refuse to use Solana for real business payments.</p>
+
+<p><strong>KavachPay fixes this.</strong></p>
+
+<hr />
+
+<h2 id="what-kavachpay-does">What KavachPay Does</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Employer enters: gross salary for 5 employees
+
+Inside Private ER TEE (Intel TDX):
+  -&gt; TDS (10%) calculated privately
+  -&gt; PF (12%) calculated privately
+  -&gt; Net salary calculated privately
+  -&gt; Three private transfers executed
+
+On Solana Explorer:
+  -&gt; One settlement transaction
+  -&gt; Amount: [hidden]
+  -&gt; Recipients: [hidden]
+  -&gt; Memo: [hidden]
+  -&gt; Nothing else
+</code></pre></div></div>
+
+<p><strong>The innovation:</strong> Automatic TDS + PF deduction computed inside TEE. No crypto payroll app does this anywhere. Not on Solana, not on Ethereum, not on Aleo.</p>
+
+<hr />
+
+<h2 id="magicblock-technologies-used">MagicBlock Technologies Used</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Technology</th>
+      <th>How KavachPay Uses It</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Private Ephemeral Rollup (TEE)</strong></td>
+      <td>Salary amounts + memos encrypted in Intel TDX hardware. Nobody reads this — not MagicBlock, not validators, not anyone</td>
+    </tr>
+    <tr>
+      <td><strong>Ephemeral Rollup</strong></td>
+      <td>Real-time payroll session at 10ms block time. Batch execution of all employee payments</td>
+    </tr>
+    <tr>
+      <td><strong>Permission Program</strong></td>
+      <td>Employer gets AUTHORITY + TX_LOGS. Each employee gets TX_BALANCES for their account only. Auditor gets temporary TX_LOGS access</td>
+    </tr>
+    <tr>
+      <td><strong>Magic Router</strong></td>
+      <td>Single RPC endpoint auto-routes delegated accounts to ER, undelegated to Solana</td>
+    </tr>
+    <tr>
+      <td><strong>Magic Actions</strong></td>
+      <td>Automatic settlement triggered on ER commit. Payroll finalizes without manual intervention</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Remove Private ER</strong> -&gt; every salary becomes public on Solana Explorer -&gt; product has zero value. Private ER is not optional. It IS the product.</p>
+
+<hr />
+
+<h2 id="how-it-works--step-by-step">How It Works — Step by Step</h2>
+
+<h3 id="employer-flow">Employer Flow</h3>
+
+<ol>
+  <li><strong>Add employees</strong> — wallet addresses + gross salary + country (India/US/UK)</li>
+  <li><strong>Review tax breakdown</strong> — TEE calculates TDS, PF, net salary for each employee</li>
+  <li><strong>Execute payroll</strong> — one click sends entire batch into Private ER TEE</li>
+  <li><strong>Settlement</strong> — Magic Action automatically records one transaction on Solana</li>
+</ol>
+
+<h3 id="what-happens-inside-the-tee">What happens inside the TEE</h3>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>For each employee (e.g. India):
+  Gross:  1,00,000 USDC
+  TDS:    - 10,000 USDC -&gt; Tax wallet   (private)
+  PF:     - 12,000 USDC -&gt; PF wallet    (private)
+  Net:      78,000 USDC -&gt; Employee     (private)
+
+All three transfers execute inside Intel TDX.
+None of these amounts ever touch Solana mainnet.
+Only the final settlement proof is recorded on-chain.
+</code></pre></div></div>
+
+<h3 id="employee-flow">Employee Flow</h3>
+
+<ol>
+  <li><strong>Open Inbox</strong> — sees “Payment received — tap to reveal”</li>
+  <li><strong>Reveal salary</strong> — signs with Phantom wallet</li>
+  <li><strong>TEE verifies</strong> — confirms wallet is the correct recipient</li>
+  <li><strong>Decrypts</strong> — shows their net salary, gross, and deduction breakdown</li>
+  <li><strong>Download payslip</strong> — private PDF with TEE attestation hash</li>
+  <li><strong>Withdraw</strong> — USDC transfers to main wallet</li>
+</ol>
+
+<hr />
+
+<h2 id="the-privacy-proof">The Privacy Proof</h2>
+
+<p>This is what Solana Explorer shows after a full payroll batch for 5 employees:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Transaction: 5dKm8Nu2mdoa6PlH9nBKFeF...
+Timestamp:   Mar 22 2026 · 11:38:37 UTC
+Amount:      [hidden]
+Recipients:  [hidden]
+Memo:        [hidden]
+Salaries:    [hidden]
+</code></pre></div></div>
+
+<p><strong>That is the entire public record. Nothing else is visible. Ever.</strong></p>
+
+<hr />
+
+<h2 id="automatic-tax-deduction--the-new-innovation">Automatic Tax Deduction — The New Innovation</h2>
+
+<p>No existing crypto payroll app calculates and splits tax automatically inside a TEE.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Country</th>
+      <th>TDS / Income Tax</th>
+      <th>PF / Social Security</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>India</td>
+      <td>10% TDS</td>
+      <td>12% PF</td>
+    </tr>
+    <tr>
+      <td>United States</td>
+      <td>22% Federal</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>United Kingdom</td>
+      <td>20% Income Tax</td>
+      <td>12% NI</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Three private transfers per employee:</p>
+<ol>
+  <li>Net salary -&gt; employee wallet (private)</li>
+  <li>Tax -&gt; government wallet (private)</li>
+  <li>PF/Social -&gt; PF wallet (private)</li>
+</ol>
+
+<p>All computed and executed inside Private ER TEE. No amounts ever visible on-chain.</p>
+
+<hr />
+
+<h2 id="architecture">Architecture</h2>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>┌─────────────────────────────────────────────────────┐
+│                    EMPLOYER                          │
+│         Adds employees + gross salaries              │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│              SOLANA MAINNET                          │
+│    init_payment() — locks USDC in escrow PDA         │
+│    delegate_payroll() — sends to Private ER          │
+└──────────────────────┬──────────────────────────────┘
+                       │ delegation
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│         MAGICBLOCK PRIVATE ER (Intel TDX)            │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐  │
+│  │           TRUSTED EXECUTION ENVIRONMENT       │  │
+│  │                                              │  │
+│  │  • Receives encrypted salary amounts         │  │
+│  │  • Calculates TDS + PF privately             │  │
+│  │  • Executes three transfers per employee     │  │
+│  │  • Permission Program enforces access        │  │
+│  │  • Hardware attestation via Intel TDX        │  │
+│  │                                              │  │
+│  │  NOBODY CAN READ THIS — not even MagicBlock  │  │
+│  └──────────────────────────────────────────────┘  │
+│                                                     │
+│    Validator: FnE6VJT5QNZdedZPnCoLsARgBwoE6DeJNjBs  │
+└──────────────────────┬──────────────────────────────┘
+                       │ commit + Magic Action
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│              SOLANA MAINNET                          │
+│    finalize_payroll() — Magic Action auto-triggers   │
+│    One settlement transaction recorded               │
+│    Amount: hidden · Memo: hidden · Recipients: hidden│
+└─────────────────────────────────────────────────────┘
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="anchor-program">Anchor Program</h2>
+
+<p>Four instructions deployed on Solana Devnet:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Instruction</th>
+      <th>Layer</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">init_payment</code></td>
+      <td>Mainnet</td>
+      <td>Locks USDC in escrow PDA</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">send_private</code></td>
+      <td>Private ER</td>
+      <td>Stores encrypted PaymentRecord in TEE</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">claim_payment</code></td>
+      <td>Private ER</td>
+      <td>TEE decrypts for authenticated recipient</td>
+    </tr>
+    <tr>
+      <td><code class="language-plaintext highlighter-rouge">settle</code></td>
+      <td>Mainnet</td>
+      <td>USDC transfer, emits zero-detail Settlement event</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="tech-stack">Tech Stack</h2>
+
+<p><strong>Blockchain</strong></p>
+<ul>
+  <li>Solana (Devnet)</li>
+  <li>Anchor 0.32.1</li>
+  <li>MagicBlock Private Ephemeral Rollups SDK</li>
+  <li>MagicBlock Ephemeral Rollups Kit</li>
+</ul>
+
+<p><strong>Frontend</strong></p>
+<ul>
+  <li>Next.js 14 (App Router)</li>
+  <li>TypeScript</li>
+  <li>TailwindCSS</li>
+  <li>Solana Wallet Adapter (Phantom)</li>
+</ul>
+
+<p><strong>Privacy Infrastructure</strong></p>
+<ul>
+  <li>MagicBlock Private SPL API (Beta)</li>
+  <li>Intel TDX Trusted Execution Environment</li>
+  <li>MagicBlock Permission Program</li>
+  <li>MagicBlock Magic Router</li>
+  <li>MagicBlock Magic Actions</li>
+</ul>
+
+<hr />
+
+<h2 id="local-development">Local Development</h2>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>solana <span class="nt">--version</span>    <span class="c"># 2.3.13</span>
+anchor <span class="nt">--version</span>    <span class="c"># 0.32.1</span>
+node <span class="nt">--version</span>      <span class="c"># 24.10.0</span>
+rust <span class="nt">--version</span>      <span class="c"># 1.85.0</span>
+</code></pre></div></div>
+
+<h3 id="setup">Setup</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Clone the repo</span>
+git clone https://github.com/BLOCK-PROGRAMR/kavachpay
+<span class="nb">cd </span>kavachpay
+
+<span class="c"># Install Anchor dependencies</span>
+npm <span class="nb">install</span>
+
+<span class="c"># Install frontend dependencies</span>
+<span class="nb">cd </span>app <span class="o">&amp;&amp;</span> npm <span class="nb">install</span>
+
+<span class="c"># Set up environment</span>
+<span class="nb">cp </span>app/.env.example app/.env.local
+</code></pre></div></div>
+
+<h3 id="run">Run</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>app <span class="o">&amp;&amp;</span> npm run dev
+<span class="c"># -&gt; http://localhost:3000</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="compliance">Compliance</h2>
+
+<p>KavachPay is <strong>not a mixer and not anonymous rails.</strong></p>
+
+<ul>
+  <li>Both sender and receiver are identifiable via wallet addresses</li>
+  <li>Only the payment <strong>payload</strong> is private (amount + memo)</li>
+  <li>Built-in OFAC + sanctions screening via MagicBlock’s node-level compliance</li>
+  <li>Identical to how traditional banking works — banks know parties, hide amounts</li>
+</ul>
+
+<p>This is <strong>payload confidentiality</strong>, not anonymity. Legally clean for enterprise use.</p>
+
+<hr />
+
+<h2 id="hackathon">Hackathon</h2>
+
+<p>Built for <strong>MagicBlock Solana Blitz v2</strong> — March 20–22, 2026</p>
+
+<p>Theme: Privacy — building real-time and private apps on Solana</p>
+
+<p><strong>Why KavachPay wins the Private ER track:</strong>
+Remove Private ER -&gt; every salary becomes public -&gt; product is worthless. Private ER is not a feature. It is the entire foundation.</p>
+
+<hr />
+
+<p><em>कवच — Indestructible armor. Your payments. Nobody else’s business.</em></p>
 
         </main>
     </div>

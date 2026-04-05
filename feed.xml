@@ -1,4 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://block-programr.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://block-programr.github.io/" rel="alternate" type="text/html" /><updated>2026-03-14T17:12:04+00:00</updated><id>https://block-programr.github.io/feed.xml</id><title type="html">5C4T3R - Smart Contract Security Engineer</title><subtitle>Smart Contract CTF Writeups, Exploits, and Security Research(Blockchain, Solidity, EVM, Ethereum, Audits, Vulnerabilities, and more))</subtitle><entry><title type="html">Qnsec Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html" rel="alternate" type="text/html" title="Qnsec Blockchain Challenges" /><published>2025-10-19T00:00:00+00:00</published><updated>2025-10-19T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/10/19/QnsecCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html"><![CDATA[<p>I recently participated in QnsecCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://block-programr.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://block-programr.github.io/" rel="alternate" type="text/html" /><updated>2026-04-05T05:26:48+00:00</updated><id>https://block-programr.github.io/feed.xml</id><title type="html">5C4T3R - Smart Contract Security Engineer</title><subtitle>Smart Contract CTF Writeups, Exploits, and Security Research(Blockchain, Solidity, EVM, Ethereum, Audits, Vulnerabilities, and more))</subtitle><entry><title type="html">One Hundred Percent</title><link href="https://block-programr.github.io/2026/03/14/one-hundred-percent.html" rel="alternate" type="text/html" title="One Hundred Percent" /><published>2026-03-14T00:00:00+00:00</published><updated>2026-03-14T00:00:00+00:00</updated><id>https://block-programr.github.io/2026/03/14/one-hundred-percent</id><content type="html" xml:base="https://block-programr.github.io/2026/03/14/one-hundred-percent.html"><![CDATA[<!-- ---
+layout: post
+title: "Paradigm CTF - One Hundred Percent"
+date: 2026-03-14
+categories: writeups
+tags: [ctfs]
+---
+
+hii hellow -->]]></content><author><name></name></author><summary type="html"><![CDATA[&lt;!– — layout: post title: “Paradigm CTF - One Hundred Percent” date: 2026-03-14 categories: writeups tags: [ctfs] —]]></summary></entry><entry><title type="html">Paradigm CTFs</title><link href="https://block-programr.github.io/writeups/2026/03/14/paradigmctf.html" rel="alternate" type="text/html" title="Paradigm CTFs" /><published>2026-03-14T00:00:00+00:00</published><updated>2026-03-14T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2026/03/14/paradigmctf</id><content type="html" xml:base="https://block-programr.github.io/writeups/2026/03/14/paradigmctf.html"><![CDATA[<p>I started solving challenges from <strong>Paradigm CTF 2023</strong> because it helps me think like an attacker.</p>
+
+<p>Before starting, I heard many good things about Paradigm CTFs. They are very helpful for developing an attacker mindset. The challenges are quite interesting and make you think deeply about vulnerabilities.</p>
+
+<hr />
+
+<h2 id="1-one-hundred-percent-challenge">1. One Hundred Percent Challenge</h2>
+
+<p>The write up will come very soon……</p>
+
+<!-- This challenge has a **very simple logic**, but it is **hard to discover at first**. -->
+
+<p><!-- [Read the Writeup](/2026/03/14/one-hundred-percent.html) --></p>]]></content><author><name></name></author><category term="writeups" /><category term="ctfs" /><summary type="html"><![CDATA[I started solving challenges from Paradigm CTF 2023 because it helps me think like an attacker.]]></summary></entry><entry><title type="html">Qnsec Blockchain Challenges</title><link href="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html" rel="alternate" type="text/html" title="Qnsec Blockchain Challenges" /><published>2025-10-19T00:00:00+00:00</published><updated>2025-10-19T00:00:00+00:00</updated><id>https://block-programr.github.io/writeups/2025/10/19/QnsecCTF</id><content type="html" xml:base="https://block-programr.github.io/writeups/2025/10/19/QnsecCTF.html"><![CDATA[<p>I recently participated in QnsecCTF with my team, <strong>HackerTroupe</strong>. As usual, I solved the smart contract challenges.</p>
 
 <h3 id="challenge-1">Challenge 1:</h3>
 
