@@ -59,7 +59,7 @@ Here are some of my public and private audits where I’ve shared my findings, a
           </a>
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="#link" target="_self">Pending</a>
+  <a href="#link" target="_self"> - </a>
 </td>
 </tr>
 <tr>
@@ -74,7 +74,7 @@ Here are some of my public and private audits where I’ve shared my findings, a
           </a>
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="#link" target="_self"> -- </a>
+  <a href="#link" target="_self"> - </a>
 </td>
 </tr>
 
@@ -91,6 +91,41 @@ Here are some of my public and private audits where I’ve shared my findings, a
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #ddd;">
   <a href="{{ '/audits/inituition-protocol-issue/' | relative_url }}" target="_self">View Report</a>
+</td>
+</tr>
+
+
+<tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Code4rena</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">ChainLink protocol</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rank- #11</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> 1 medium </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$0</td>
+         <td style="padding:10px; border-bottom:1px solid #ddd;">
+          <a href="https://code4rena.com/@0w1" target="_blank">
+            click here
+          </a>
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+  <a href="#link" target="_self"> - </a>
+</td>
+</tr>
+
+
+ <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Cantina</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Revert Protocol </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> Rank- #1</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">2 mediums</td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$5,284.82</td>
+         <td style="padding:10px; border-bottom:1px solid #ddd;">
+          <a href="{{ '/assets/images/audits/revert.png' | relative_url }}" target="_blank">
+            click here
+          </a>
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
+        <a href="#link" target="_self"> - </a>
+  
 </td>
 </tr>
 
