@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"nav\\\\|ul\\\\|header\\\\|body\" /tmp/blog-build/assets/main.css | head -40)",
+      "Read(//private/tmp/blog-build/assets/**)",
+      "Bash(grep -n \"profile\\\\|sidebar\\\\|aside\\\\|site-header\" /tmp/blog-build/index.html | head -20)",
+      "Read(//private/tmp/blog-build/**)"
+    ]
+  }
+}
