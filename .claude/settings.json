@@ -4,7 +4,21 @@
       "Bash(grep -n \"nav\\\\|ul\\\\|header\\\\|body\" /tmp/blog-build/assets/main.css | head -40)",
       "Read(//private/tmp/blog-build/assets/**)",
       "Bash(grep -n \"profile\\\\|sidebar\\\\|aside\\\\|site-header\" /tmp/blog-build/index.html | head -20)",
-      "Read(//private/tmp/blog-build/**)"
+      "Read(//private/tmp/blog-build/**)",
+      "Bash(bundle exec *)",
+      "Bash(curl -s http://127.0.0.1:4000)",
+      "Bash(pkill -f \"jekyll serve\")",
+      "Bash(curl -s http://127.0.0.1:4010/analysis/ECDSA/)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --screenshot=audits2.png --window-size=1400,1100 --hide-scrollbars --virtual-time-budget=6000 http://127.0.0.1:4010/audits/)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --screenshot=audits3.png --window-size=1400,900 --hide-scrollbars --virtual-time-budget=6000 http://127.0.0.1:4010/audits/)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --screenshot=mobile.png --window-size=390,1300 --hide-scrollbars --virtual-time-budget=6000 http://127.0.0.1:4010/audits/)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --screenshot=projects2.png --window-size=1400,1200 --hide-scrollbars --virtual-time-budget=6000 http://127.0.0.1:4010/projects/)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -sf -o /dev/null http://127.0.0.1:4011/audits/)",
+      "Bash(break)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --screenshot=audits4.png --window-size=1400,850 --hide-scrollbars --virtual-time-budget=6000 http://127.0.0.1:4011/audits/)",
+      "Bash(git add *)",
+      "Bash(git rm *)"
     ]
   }
 }

@@ -29,7 +29,7 @@ Ethereum uses:
 
  It’s a smooth, symmetric curve (about the x-axis). Every operation is modulo a large prime, so the curve becomes a finite set of points
 
- #### Graph Concept:
+#### Graph Concept:
 
  ![ECDSA]({{ '../assets/images/ECDSA.jpg' | relative_url }})
 
@@ -223,7 +223,7 @@ Both are valid, allowing attackers to create a second signature without the priv
 #### How Private Keys Can Be Stolen(if u neglect the nonce) :
 ECDSA is secure only if:
 
-> ⚠️ Never reuse the same nonce `k` — this will leak your private key!
+>  Never reuse the same nonce `k` — this will leak your private key!
 
 Private Key Leaks Happen If:
    Same k reused → Attacker can compute p directly!

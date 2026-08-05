@@ -14,7 +14,7 @@ permalink: /projects/
     {% for project in sorted_projects %}
       <a href="{{ project.url | relative_url }}" class="project-box">
         <h2>{{ project.title }}</h2>
-        <p>{{ project.date }}</p>
+        <p>{{ project.date | date: "%B %Y" }}</p>
         <p>{{ project.description }}</p>
         {% if project.tech %}
           <small><strong>Tech:</strong> {{ project.tech | join: ", " }}</small>

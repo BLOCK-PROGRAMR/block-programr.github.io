@@ -1,228 +1,82 @@
 /* ===========================
-   CLEAN ROBOTO MONO THEME
-   White background with minimal styling
+   COMPONENT STYLES
+   Typography, colors and layout primitives live in _layouts/default.html.
+   This file only styles components that markup actually uses:
+   .home, .project-grid, .project-box, and media inside prose.
    =========================== */
 
-/* --- HOME PAGE LAYOUT --- */
+/* --- HOME / PAGE CONTAINER --- */
 .home {
-    max-width: 720px;
+    max-width: var(--measure);
     margin: 0 auto;
-    padding: 2rem 1.5rem;
     text-align: left;
 }
 
-/* --- POST LIST (Simple, Clean) --- */
-.home .post-list {
-    list-style: none;
-    padding: 0;
-}
-
-.home .post-list li {
-    margin-bottom: 4rem;
-    padding-bottom: 3rem;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.home .post-list li:last-child {
-    border-bottom: none;
-}
-
-.home .post-list h2 {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #000000;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-}
-
-.home .post-list .post-meta {
-    font-size: 0.9rem;
-    color: #666666;
-    margin-bottom: 1rem;
-    font-family: 'Roboto Mono', monospace;
-}
-
-.home .post-list p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #000000;
-    margin-bottom: 1.5rem;
-}
-
-.home .post-list a {
-    color: #000000;
-    text-decoration: none;
-    border-bottom: none;
-}
-
-.home .post-list a:hover h2 {
-    color: #666666;
-}
-
-.home .post-list .read-more {
-    color: #000000;
-    font-weight: 600;
-    text-decoration: underline;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-}
-
-.home .post-list .read-more:hover {
-    color: #666666;
-}
-
-/* --- PROJECT CARDS (Minimal Style) --- */
-.project-box {
-    display: block;
-    background: #ffffff;
-    padding: 2rem;
-    border: 1px solid #e5e5e5;
-    color: #000000;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    margin-bottom: 2rem;
-}
-
-.project-box:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-color: #000000;
-}
-
-.project-box h2 {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    margin-top: 0;
-    color: #000000;
-}
-
-.project-box p {
-    font-size: 14px;
-    margin-bottom: 1rem;
-    line-height: 1.6;
-    color: #000000;
-}
-
-.project-box small {
-    font-size: 13px;
-    color: #666666;
-    display: block;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #e5e5e5;
-}
-
-/* --- PROJECT GRID LAYOUT --- */
+/* --- PROJECT GRID --- */
 .project-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.25rem;
+    margin-top: 2rem;
 }
 
-/* --- ARTICLE CONTENT STYLING --- */
-article {
-    max-width: 720px;
-    margin: 0 auto;
+.project-box {
+    display: block;
+    background: #fffefc;
+    padding: 1.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-article h1 {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 1.5rem;
+.project-box:hover {
+    border-color: var(--ink);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.project-box h2 {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
     font-weight: 700;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: #000000;
+    margin: 0 0 0.5rem;
+    color: var(--ink);
 }
 
-article h2 {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-top: 3.5rem;
-    margin-bottom: 1.25rem;
-    color: #000000;
-}
-
-article h3 {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 1.15rem;
-    font-weight: 600;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    color: #000000;
-}
-
-article p {
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-    color: #000000;
-    font-size: 14px;
-}
-
-article ul,
-article ol {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
-    line-height: 1.6;
-    color: #000000;
-}
-
-article li {
+/* First <p> in a project card is the date — treat it as metadata. */
+.project-box p:first-of-type {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-muted);
     margin-bottom: 0.75rem;
 }
 
-/* --- BLOCKQUOTES --- */
-blockquote {
-    border-left: 3px solid #e5e5e5;
-    padding-left: 1.5rem;
-    margin: 2rem 0;
-    color: #666666;
-    font-style: italic;
-    font-size: 14px;
+.project-box p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 0;
+    color: var(--ink);
+}
+
+.project-box small {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    display: block;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
     line-height: 1.6;
 }
 
-blockquote p {
-    margin-bottom: 0.5rem;
-}
-
-/* --- TABLES --- */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-    background: #ffffff;
-    border: 1px solid #e5e5e5;
-}
-
-th,
-td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-th {
-    background: #f5f5f5;
-    color: #000000;
-    font-weight: 700;
-    font-family: 'Roboto Mono', monospace;
-}
-
-tr:hover {
-    background: #fafafa;
-}
-
-/* --- IMAGES --- */
+/* --- MEDIA IN PROSE --- */
 img {
     max-width: 100%;
     height: auto;
     margin: 2rem 0;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
 }
 
 figure {
@@ -230,101 +84,46 @@ figure {
 }
 
 figcaption {
-    font-size: 0.9rem;
-    color: #666666;
-    font-style: italic;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-muted);
     text-align: center;
     margin-top: 0.75rem;
 }
 
-/* --- ANALYSIS & AUDIT PAGES --- */
-.analysis-box,
-.audit-box,
-.ctf-box {
-    background: #ffffff;
-    padding: 2rem;
-    border: 1px solid #e5e5e5;
-    margin-bottom: 2rem;
-    transition: all 0.2s ease;
+/* Wide tables (the audits table) get more room than the prose measure
+   allows, and scroll rather than forcing the page to scroll. */
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 92vw;
+    max-width: 1100px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.analysis-box:hover,
-.audit-box:hover,
-.ctf-box:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-color: #000000;
+.table-scroll td { white-space: nowrap; }
+
+/* The wordy columns may wrap; the short ones should not. */
+.table-scroll td:nth-child(2),
+.table-scroll td:nth-child(4) { white-space: normal; min-width: 9rem; }
+
+@media (max-width: 1000px) {
+    .table-scroll {
+        width: 100%;
+        left: 0;
+        transform: none;
+    }
 }
 
-/* --- TAG PAGES --- */
-.tag-item {
-    display: inline-block;
-    background: #ffffff;
-    border: 1px solid #e5e5e5;
-    padding: 0.5rem 1rem;
-    margin: 0.5rem;
-    color: #666666;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-}
-
-.tag-item:hover {
-    background: #000000;
-    border-color: #000000;
-    color: #ffffff;
-}
-
-/* --- SECTION DIVIDERS --- */
-hr {
-    border: none;
-    border-top: 1px solid #e5e5e5;
-    margin: 2rem 0;
-}
-
-/* --- METADATA --- */
-.post-meta,
-.article-meta {
-    font-size: 0.9rem;
-    color: #666666;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid #e5e5e5;
-}
-
-/* --- RESPONSIVE DESIGN --- */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    body {
+    .project-box {
+        padding: 1.25rem;
+    }
+
+    .project-box h2 {
         font-size: 1rem;
-    }
-
-    .home {
-        padding: 1.5rem 1rem;
-    }
-
-    .home .post-list h2 {
-        font-size: 1.35rem;
-    }
-
-    article h1 {
-        font-size: 1.4rem;
-    }
-
-    article h2 {
-        font-size: 1.2rem;
-    }
-
-    article h3 {
-        font-size: 1.1rem;
-    }
-
-    .project-box,
-    .analysis-box,
-    .audit-box {
-        padding: 1.5rem;
-    }
-
-    blockquote {
-        padding-left: 1.5rem;
-        font-size: 1.1rem;
     }
 }

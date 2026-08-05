@@ -17,118 +17,67 @@ Here are some of my public and private audits where I’ve shared my findings, a
 
 <h2>Public Audits</h2>
 
-<!-- Responsive table container -->
-<div style="overflow-x:auto;">
-  <table style="width:100%; border-collapse: collapse; text-align: left; font-size: 16px;">
+<div class="table-scroll">
+  <table>
     <thead>
       <tr>
-        <th style="padding: 10px; border-bottom: 2px solid #ddd;">Platform</th>
-        <th style="padding: 10px; border-bottom: 2px solid #ddd;">Competition Name</th>
-        <th style="padding: 10px; border-bottom: 2px solid #ddd;">Rank</th>
-        <th style="padding: 10px; border-bottom: 2px solid #ddd;">Severity</th>
-        <th style="padding: 10px; border-bottom: 2px solid #ddd;">Prize</th>
-         <th style="padding:10px; border-bottom:2px solid #ddd;">Proof</th>
-        <th style="padding: 10px; border-bottom: 2px solid #ddd;">Report Link</th>
+        <th>Platform</th>
+        <th>Competition Name</th>
+        <th>Rank</th>
+        <th>Severity</th>
+        <th>Prize</th>
+        <th>Report Link</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Cantina</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Kuru Protocol</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> Rank-20</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">1 H</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$605.39</td>
-         <td style="padding:10px; border-bottom:1px solid #ddd;">
-          <a href="{{ '/assets/images/audits/kuru-proof.jpg' | relative_url }}" target="_blank">
-            click here
-          </a>
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="{{ '/audits/kuru-protocol-audit/' | relative_url }}" target="_self">View Report</a>
-</td>
-</tr>
- <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Code4rena</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Megapot protocol</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rank-16</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">1 H,1 M</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$177.99</td>
-         <td style="padding:10px; border-bottom:1px solid #ddd;">
-          <a href="https://code4rena.com/@0xscater" target="_blank">
-            click here
-          </a>
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="#link" target="_self"> - </a>
-</td>
-</tr>
-<tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Code4rena</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Ekubo protocol</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rank- #1</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">QA Report </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$1515.79</td>
-         <td style="padding:10px; border-bottom:1px solid #ddd;">
-          <a href="https://code4rena.com/@0xscater" target="_blank">
-            click here
-          </a>
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="#link" target="_self"> - </a>
-</td>
-</tr>
-
-<tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Code4rena</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Inituition protocol</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rank- #2</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> 1 medium +Qa report #2nd rank </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$445.43</td>
-         <td style="padding:10px; border-bottom:1px solid #ddd;">
-          <a href="https://code4rena.com/@0xscater" target="_blank">
-            click here
-          </a>
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="{{ '/audits/inituition-protocol-issue/' | relative_url }}" target="_self">View Report</a>
-</td>
-</tr>
-
-
-<tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Code4rena</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">ChainLink protocol</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Rank- #11</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> 1 medium </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$0</td>
-         <td style="padding:10px; border-bottom:1px solid #ddd;">
-          <a href="https://code4rena.com/@0w1" target="_blank">
-            click here
-          </a>
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-  <a href="#link" target="_self"> - </a>
-</td>
-</tr>
-
-
- <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Cantina</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">Revert Protocol </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;"> Rank- #1</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">2 mediums</td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">$5,284.82</td>
-         <td style="padding:10px; border-bottom:1px solid #ddd;">
-          <a href="{{ '/assets/images/audits/revert.png' | relative_url }}" target="_blank">
-            click here
-          </a>
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #ddd;">
-        <a href="#link" target="_self"> - </a>
-  
-</td>
-</tr>
-
-  </tbody>
+        <td>Cantina</td>
+        <td>Kuru Protocol</td>
+        <td>Rank-20</td>
+        <td>1 H</td>
+        <td>$605.39</td>
+        <td><a href="{{ '/audits/kuru-protocol-audit/' | relative_url }}">View Report</a></td>
+      </tr>
+      <tr>
+        <td>Code4rena</td>
+        <td>Megapot protocol</td>
+        <td>Rank-16</td>
+        <td>1 H, 1 M</td>
+        <td>$177.99</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Code4rena</td>
+        <td>Ekubo protocol</td>
+        <td>Rank-#1</td>
+        <td>QA Report</td>
+        <td>$1515.79</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Code4rena</td>
+        <td>Inituition protocol</td>
+        <td>Rank-#2</td>
+        <td>1 medium + QA report #2</td>
+        <td>$445.43</td>
+        <td><a href="{{ '/audits/inituition-protocol-issue/' | relative_url }}">View Report</a></td>
+      </tr>
+      <tr>
+        <td>Code4rena</td>
+        <td>ChainLink protocol</td>
+        <td>Rank-#11</td>
+        <td>1 medium</td>
+        <td>$0</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Cantina</td>
+        <td>Revert Protocol</td>
+        <td>Rank-#1</td>
+        <td>2 mediums</td>
+        <td>$5,284.82</td>
+        <td>-</td>
+      </tr>
+    </tbody>
   </table>
 </div>
