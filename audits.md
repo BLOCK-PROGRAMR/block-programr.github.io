@@ -22,8 +22,7 @@ Here are some of my public and private audits where I’ve shared my findings, a
     <thead>
       <tr>
         <th>Platform</th>
-        <th>Competition Name</th>
-        <th>Rank</th>
+        <th>Protocol</th>
         <th>Severity</th>
         <th>Prize</th>
         <th>Report Link</th>
@@ -32,48 +31,42 @@ Here are some of my public and private audits where I’ve shared my findings, a
     <tbody>
       <tr>
         <td>Cantina</td>
-        <td>Kuru Protocol</td>
-        <td>Rank-20</td>
+        <td>Kuru Protocol (#20)</td>
         <td>1 H</td>
         <td>$605.39</td>
         <td><a href="{{ '/audits/kuru-protocol-audit/' | relative_url }}">View Report</a></td>
       </tr>
       <tr>
         <td>Code4rena</td>
-        <td>Megapot protocol</td>
-        <td>Rank-16</td>
+        <td>Megapot Protocol (#16)</td>
         <td>1 H, 1 M</td>
         <td>$177.99</td>
         <td>-</td>
       </tr>
       <tr>
         <td>Code4rena</td>
-        <td>Ekubo protocol</td>
-        <td>Rank-#1</td>
+        <td>Ekubo Protocol (#1)</td>
         <td>QA Report</td>
         <td>$1515.79</td>
         <td>-</td>
       </tr>
       <tr>
         <td>Code4rena</td>
-        <td>Inituition protocol</td>
-        <td>Rank-#2</td>
+        <td>Intuition Protocol (#2)</td>
         <td>1 medium + QA report #2</td>
         <td>$445.43</td>
         <td><a href="{{ '/audits/inituition-protocol-issue/' | relative_url }}">View Report</a></td>
       </tr>
       <tr>
         <td>Code4rena</td>
-        <td>ChainLink protocol</td>
-        <td>Rank-#11</td>
+        <td>ChainLink Protocol (#11)</td>
         <td>1 medium</td>
         <td>$0</td>
         <td>-</td>
       </tr>
       <tr>
         <td>Cantina</td>
-        <td>Revert Protocol</td>
-        <td>Rank-#1</td>
+        <td>Revert Protocol (#1)</td>
         <td>2 mediums</td>
         <td>$5,284.82</td>
         <td>-</td>

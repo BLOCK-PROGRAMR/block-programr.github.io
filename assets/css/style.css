@@ -2,72 +2,192 @@
    COMPONENT STYLES
    Typography, colors and layout primitives live in _layouts/default.html.
    This file only styles components that markup actually uses:
-   .home, .project-grid, .project-box, and media inside prose.
+   the home page blocks, wide tables, and media inside prose.
    =========================== */
 
-/* --- HOME / PAGE CONTAINER --- */
-.home {
-    max-width: var(--measure);
-    margin: 0 auto;
-    text-align: left;
+/* --- HOME: INTRO --- */
+.intro {
+    margin-bottom: 3.5rem;
 }
 
-/* --- PROJECT GRID --- */
-.project-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-    margin-top: 2rem;
-}
-
-.project-box {
-    display: block;
-    background: #fffefc;
-    padding: 1.75rem;
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    color: var(--ink);
-    text-decoration: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.project-box:hover {
-    border-color: var(--ink);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-}
-
-.project-box h2 {
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem;
-    color: var(--ink);
-}
-
-/* First <p> in a project card is the date — treat it as metadata. */
-.project-box p:first-of-type {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--ink-muted);
+.intro h1 {
     margin-bottom: 0.75rem;
 }
 
-.project-box p {
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 0;
-    color: var(--ink);
+.intro .handle {
+    color: var(--ink-muted);
+    font-weight: 400;
 }
 
-.project-box small {
+.intro .tagline {
+    font-size: 1.05rem;
+    max-width: min(34em, 100%);
+    margin-bottom: 0.9rem;
+}
+
+.intro .stat-line {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 0;
+}
+
+/* --- HOME: SECTION HEADINGS --- */
+.feed-heading {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-muted);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 0.5rem;
+}
+
+/* --- HOME: RECENT FEED --- */
+.feed {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+}
+
+.feed-item {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr auto;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 0;
+}
+
+.feed-item:last-child { border-bottom: none; }
+
+.feed-kind {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+}
+
+.feed-title {
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+.feed-title:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+.feed-date {
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--ink-muted);
-    display: block;
-    margin-top: 1rem;
-    padding-top: 1rem;
+    white-space: nowrap;
+}
+
+/* --- HOME: SECTION LINKS --- */
+.feed-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    margin-bottom: 3.5rem;
+}
+
+/* --- HOME: SELECTED FINDINGS --- */
+.findings {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem;
+}
+
+.findings li {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 0;
+}
+
+.findings li:last-child { border-bottom: none; }
+
+.findings .rank {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 2rem;
+}
+
+.findings .finding-meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.section-link {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    margin-bottom: 3.5rem;
+}
+
+.availability {
+    font-size: 15px;
+    color: var(--ink-muted);
+    padding-top: 1.5rem;
     border-top: 1px solid var(--rule);
+}
+
+/* --- POSTS INDEX (year-grouped archive) --- */
+.post-year {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.post-index {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.post-index-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 0.45rem 0;
+    margin-bottom: 0;
+}
+
+.post-index-date {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.post-index-item a {
+    font-family: var(--font-mono);
+    font-size: 14.5px;
     line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .post-index-item {
+        flex-direction: column;
+        gap: 0.1rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--rule);
+    }
+
+    .post-index-item:last-child { border-bottom: none; }
 }
 
 /* --- MEDIA IN PROSE --- */
@@ -96,8 +216,7 @@ figcaption {
 .table-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    width: 92vw;
-    max-width: 1100px;
+    width: min(92vw, 1100px);
     position: relative;
     left: 50%;
     transform: translateX(-50%);
@@ -105,9 +224,8 @@ figcaption {
 
 .table-scroll td { white-space: nowrap; }
 
-/* The wordy columns may wrap; the short ones should not. */
-.table-scroll td:nth-child(2),
-.table-scroll td:nth-child(4) { white-space: normal; min-width: 9rem; }
+/* The wordy severity column may wrap; the short ones should not. */
+.table-scroll td:nth-child(3) { white-space: normal; min-width: 9rem; }
 
 @media (max-width: 1000px) {
     .table-scroll {
@@ -119,11 +237,26 @@ figcaption {
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-    .project-box {
-        padding: 1.25rem;
+    /* Stack the feed: kind + date on one line, title beneath. */
+    .feed-item {
+        grid-template-columns: 1fr auto;
+        gap: 0.15rem 0.75rem;
     }
 
-    .project-box h2 {
-        font-size: 1rem;
+    .feed-kind { grid-row: 1; grid-column: 1; }
+    .feed-date { grid-row: 1; grid-column: 2; }
+    .feed-title { grid-row: 2; grid-column: 1 / -1; }
+
+    .feed-links {
+        gap: 0.4rem 1.25rem;
+    }
+
+    .findings li {
+        gap: 0.3rem 0.7rem;
+    }
+
+    .findings .finding-meta {
+        margin-left: 0;
+        flex-basis: 100%;
     }
 }

@@ -3,25 +3,55 @@ layout: default
 title: Home
 ---
 
-<div class="home">
-
-    <div>
-
-        <h3>Nithin Kumar (aka 5C4T3R)</h3>
-
-        <ul>
-            <li>Smart Contract Security Researcher </li>
-            <li>Building cool stuff on Solana and EVM</li>
-            <li>Auditor(in competative platforms)</li>
-            <li>CTF Player(Category:Blockchain security)</li>
-        </ul>
-
-        <h4>Core Skills</h4>
-        <ul>
-            <li><b>Focus:</b> Smart contract Security and Build Tools in Web3Sec </li>
-            <li><b>Toolkit:</b> Proficient with Slither, Aderyn,Scribble and Present Working on echidna</li>
-            <li><b>My Aresenal:</b> .sol, .rs, .py, .js </li>
-        </ul>
-
-    </div>
+<div class="intro">
+  <h1>Nithin Kumar <span class="handle">/ 5C4T3R</span></h1>
+  <p class="tagline">
+    I'm a security researcher and auditor focused on EVM and Solana.
+    I enjoy exploring security tooling, testing workflows, and AI agents.
+    Outside of work — music, science, mathematics, philosophy, and Itihasa.
+  </p>
+  <p class="stat-line">
+    6 contests · 2 first-place finishes · Cantina · Code4rena
+  </p>
 </div>
+
+<h2 class="feed-heading">Selected findings</h2>
+
+<ul class="findings">
+  <li><span class="rank">#1</span> Revert Protocol <span class="finding-meta">2 mediums · Cantina</span></li>
+  <li><span class="rank">#1</span> Ekubo Protocol <span class="finding-meta">QA report · Code4rena</span></li>
+  <li><span class="rank">#2</span> Intuition Protocol <span class="finding-meta">1 medium · Code4rena</span></li>
+</ul>
+
+<p class="section-link"><a href="{{ '/audits' | relative_url }}">All audit results →</a></p>
+
+<h2 class="feed-heading">Recent writing</h2>
+
+<ul class="feed">
+  {% comment %}
+    One reverse-chronological feed across the writeups and analysis
+    collections, each entry labelled by kind.
+  {% endcomment %}
+  {% assign feed = "" | split: "" %}
+  {% for post in site.categories.writeups %}{% assign feed = feed | push: post %}{% endfor %}
+  {% for post in site.analysis %}{% assign feed = feed | push: post %}{% endfor %}
+  {% assign feed = feed | sort: "date" | reverse %}
+
+  {% for item in feed limit: 7 %}
+    {% assign kind = "analysis" %}
+    {% if item.categories contains "writeups" %}{% assign kind = "writeup" %}{% endif %}
+    <li class="feed-item">
+      <span class="feed-kind feed-kind--{{ kind }}">{{ kind }}</span>
+      <a class="feed-title" href="{{ item.url | relative_url }}">{{ item.title }}</a>
+      <span class="feed-date">{{ item.date | date: "%b %Y" }}</span>
+    </li>
+  {% endfor %}
+</ul>
+
+<div class="feed-links">
+  <a href="{{ '/posts' | relative_url }}">All posts →</a>
+</div>
+
+<p class="availability">
+  Available for private audits — <a href="mailto:0xscater@gmail.com">0xscater@gmail.com</a>
+</p>

@@ -1,0 +1,32 @@
+---
+layout: default
+title: Posts
+permalink: /posts/
+---
+
+<h1>Posts</h1>
+
+{% comment %}
+  One merged, year-grouped index of writeups and analysis pieces,
+  in the style of a plain date + title archive.
+{% endcomment %}
+{% assign all_posts = "" | split: "" %}
+{% for post in site.categories.writeups %}{% assign all_posts = all_posts | push: post %}{% endfor %}
+{% for post in site.analysis %}{% assign all_posts = all_posts | push: post %}{% endfor %}
+{% assign all_posts = all_posts | sort: "date" | reverse %}
+
+{% assign current_year = "" %}
+{% for post in all_posts %}
+  {% assign year = post.date | date: "%Y" %}
+  {% if year != current_year %}
+    {% unless current_year == "" %}</ul>{% endunless %}
+    <h2 class="post-year">{{ year }}</h2>
+    <ul class="post-index">
+    {% assign current_year = year %}
+  {% endif %}
+  <li class="post-index-item">
+    <span class="post-index-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+  </li>
+  {% if forloop.last %}</ul>{% endif %}
+{% endfor %}

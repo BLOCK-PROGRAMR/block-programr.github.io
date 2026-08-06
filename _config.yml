@@ -12,9 +12,6 @@ plugins:
   # - jekyll-tagging
 
 collections:
-  projects:
-    output: true
-    permalink: /projects/:title/
   analysis:
     output: true
     permalink: /analysis/:title/
