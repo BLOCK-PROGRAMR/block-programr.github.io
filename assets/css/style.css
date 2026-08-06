@@ -211,29 +211,18 @@ figcaption {
     margin-top: 0.75rem;
 }
 
-/* Wide tables (the audits table) get more room than the prose measure
-   allows, and scroll rather than forcing the page to scroll. */
+/* Tables stay within the prose measure and scroll if a narrow
+   viewport can't fit them. */
 .table-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    width: min(92vw, 1100px);
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+    width: 100%;
 }
 
 .table-scroll td { white-space: nowrap; }
 
 /* The wordy severity column may wrap; the short ones should not. */
-.table-scroll td:nth-child(3) { white-space: normal; min-width: 9rem; }
-
-@media (max-width: 1000px) {
-    .table-scroll {
-        width: 100%;
-        left: 0;
-        transform: none;
-    }
-}
+.table-scroll td:nth-child(3) { white-space: normal; }
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) {
