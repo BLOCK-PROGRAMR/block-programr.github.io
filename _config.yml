@@ -9,7 +9,6 @@ url: "https://BLOCK-PROGRAMR.github.io"
 
 plugins:
   - jekyll-feed
-  # - jekyll-tagging
 
 collections:
   analysis:
@@ -19,13 +18,6 @@ collections:
     output: true
     permalink: /audits/:title/
 
-tag_permalink_style: pretty
-
-tag_page_layout: tag
-tag_page_dir: tag
-taxonomies:
-  tag: tags
-  
 theme: minima
 show_excerpts: true
 
